@@ -1,0 +1,24 @@
+{
+  "name": "stocker",
+  "version": "1.0.1",
+  "description": "Fixing download",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dwallach1/stocker.git"
+  },
+  "author": "David Wallach",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dwallach1/stocker/issues"
+  },
+
+  "homepage": "https://github.com/dwallach1/stocker#readme",
+
+  "dependencies": {
+    "secret-module": "git+ssh://git@github.com:dwallach1/stocker" 
+  }
+}
