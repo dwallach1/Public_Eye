@@ -203,6 +203,7 @@ $(function() {
 		} else {
 			company = document.getElementById('search').value;
 			if (company.length > 0){
+            hideAlert()
 				showSearchBackground();
 				$('html, body').animate({
     				scrollTop: $("#particles").offset().top
@@ -213,7 +214,7 @@ $(function() {
 				        h.innerHTML = "Scraping Web";
 				    else 
 				        h.innerHTML += ".";
-				    }, 300);
+				    }, 500);
             news_sources = JSON.stringify(news_sources)
 				$.ajax({
 		            url: '/run_query/',
@@ -232,7 +233,13 @@ $(function() {
                      buildDisplayData(response);
 		            },
 		            error: function(error) {
-		                // console.log(error);
+                     hideSearchBackground()
+                     document.getElementById('tickerError').style.display = 'block';
+                     $('html, body').animate({
+                                 scrollTop: $("#tickerError").offset().top
+                        }, 1000);
+                                       
+                  		                // console.log(error);
                       console.log("there was an error");
 		            }
 		        });
@@ -250,40 +257,44 @@ $(function() {
 
 
 function buildDisplayData(json){
-   // console.log('oh we in it');
-   // console.log(json);
-   // console.log(typeof(json));
-   // var x = json[0]['source'];
-   // console.log(x);
-   var div = document.createElement('div');
-   // document.body.appendChild(div);
-   document.getElementById("newsCheckList").appendChild(div);
-   div.id = 'results';
-   div.innterHTML = '<h1>We Parsed ' + json.length + ' articles pertaining to your query </h1>';
-   div.innerHTML += '<h3>Here are the results:</h3>';
 
-   // var i = 0;
+   var div_result = document.createElement('div');
+   document.getElementById("newsCheckList").appendChild(div_result);
+   div_result.id = 'results';
+   div_result.innerHTML += '<h1>Here are the results:</h1>';
+   div_result.innerHTML += '<h2>We Parsed ' + json.length + ' articles pertaining to your query </h2>';
+   $("#results h1").css({"color": "#007ba7", "text-align": "center"});
+   $("#results h2").css({"color": "#007ba7", "text-align": "center"});
+   $("#results").css({"padding-top": "30px"});
+
+   var sentiment = 0;
+   var inputs = 0;
    for(i=0;i<json.length;i++) {
       var div = document.createElement('div');
-      document.getElementById("results").appendChild(div);
-      // document.body.appendChild(div);
-      // div.id = 'data' + str(i);
+      document.getElementById("newsCheckList").appendChild(div);
+    
       div.id = 'data';
       // i += 1
-      div.innerHTML = '<h1>' + json[i]['title'] + '</h1>';
+      div.innerHTML = '<h2>' + json[i]['title'] + '</h2>';
       div.innerHTML += '<p>' + json[i]['source'] + '</p>';
       div.innerHTML += '<p>' + json[i]['date'] + '</p>';
       div.innerHTML += '<p>' + json[i]['url'] + '</p>';
       div.innerHTML += '<p>' + json[i]['sublinks'] + '</p>';
       div.innerHTML += '<p>' + json[i]['article_data'] + '</p>';
       div.innerHTML += '<h3>' + '<b>' + json[i]['sentiment'] + '</b>' + '</h3>';
+      if(json[i]['sentiment'] != 0){
+         sentiment += json[i]['sentiment'];
+         inputs += 1;
+      }
    }
+   var avg_sentiment = sentiment /inputs;
+
+   div_result.innerHTML += '<h2> We Found the average Sentiment to be: '+ avg_sentiment +'</h2>';
 
    hideSearchBackground()
    $('html, body').animate({
                scrollTop: $("#results").offset().top
       }, 1000);
-
 
 
 }
@@ -299,8 +310,6 @@ function(){for(var a=0,b=["ms","moz","webkit","o"],c=0;c<b.length&&!window.reque
 
 $(document).ready(function() {
   $('#particles').particleground({
-    // dotColor: '#5cbdaa',
-    // lineColor: '#5cbdaa'
     dotColor: '#fff',
     lineColor: '#fff'
   });
