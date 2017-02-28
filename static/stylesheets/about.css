@@ -29,9 +29,6 @@ body {
 	text-align: center;
 }
 
-#about {
-	height: 60vh;
-}
 
 /************/
 
@@ -305,4 +302,21 @@ fieldset[disabled] .btn-primary.active {
   color: white;
   text-shadow: none;
   background: #222222;
+}
+
+
+/******/
+#about {
+	height: 100vh;
+	margin-top: -20px;
+}
+
+#team {
+	background-color: #007ba7;
+	color: #fff;
+}
+
+#team hr {
+	border-color: #fff;
+	color: #fff;
 }
