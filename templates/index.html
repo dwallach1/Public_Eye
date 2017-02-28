@@ -11,13 +11,14 @@
 </head>
 	<nav class="navbar navbar-default" id="nav">
           <div class="container nav-container">
-            <div class="navbar-header">
-              <img src="{{ url_for('static', filename='img/the_eye.png') }}">
+            <div class="navbar-header" >
+              <img href="{{ url_for('index') }}" src="{{ url_for('static', filename='img/the_eye.png') }}">
               <b>Public Eye</b>
             </div>
             <div class="navbar-collapse collapse">
               <ul class="nav navbar-nav navbar-right" id="nav-options-right">
-              <li><a href="#" id="nav-option">About</a></li>
+			  <li><a href="{{ url_for('index') }}" id="nav-option">Home</a></li>
+              <li><a href="{{ url_for('about') }}" id="nav-option">About</a></li>
               <li><a href="#" id="nav-option">How It Works</a></li>
               <li><a href="#" id="nav-option">FAQ</a></li>
               </ul>

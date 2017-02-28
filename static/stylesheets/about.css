@@ -1,0 +1,35 @@
+body {
+	background-color: #f2f2f2;
+}
+form {
+	padding-top: 20px;
+	text-align: center;
+}
+
+.navbar-header>img {
+	width: 40px;
+	height: 40px;
+
+}
+
+.navbar-header {
+	padding-top: 6px;
+	cursor: pointer;
+	color: #007ba7;
+}
+
+#nav-option:hover{
+	color: #007ba7;
+}
+
+#nav-option.active {
+	outline-color: #007ba7;
+}
+
+#eye>img{
+	display: block;
+	width: 200px;
+	height: 200px;
+	margin: auto;
+	text-align: center;
+}
