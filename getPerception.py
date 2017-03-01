@@ -60,10 +60,10 @@ def parser(html, url, company, source, date, title, max_depth):
 	# if not check_relevance(html, company):
 	# 	return []
 
-	if date == "NULL" and max_depth == 0: 	#if date is null cannot match against historic stock data
-											#if max_depth is 0 no need for sublinks
-		print "Date is null and max_depth is 0 so not going to parse data nor gather sublinks\n"
-		return []
+	# if date == "NULL" and max_depth == 0: 	#if date is null cannot match against historic stock data
+	# 										#if max_depth is 0 no need for sublinks
+	# 	print "Date is null and max_depth is 0 so not going to parse data nor gather sublinks\n"
+	# 	return []
 
 	pertinent_info = []
 	sublinks = []
@@ -73,6 +73,8 @@ def parser(html, url, company, source, date, title, max_depth):
 	total_score = 0.0
 	entries = 0
 
+	# print html
+	export_html = ""
 	pattern = re.compile(r'<p>.*?</p>') #find only the ptag 
 	data = pattern.findall(html)
 	pertinent_info = pertinent_info + data
@@ -94,14 +96,23 @@ def parser(html, url, company, source, date, title, max_depth):
 
 		#get rid of all extraneous chars 
 		clean_html = re.sub('[^A-Za-z0-9]+', ' ', clean_html, re.DOTALL)
+
 		for link in sublinks_local:
 			sublinks.append(link)
 
-		if date == "NULL":
-			print "date is null -- continue to next iteration"
-			continue
+		# if date == "NULL":
+		# 	print "date is null -- continue to next iteration"
+		# 	continue
 
+		# print "\n\n ----------- \n\n"
+		# print clean_html
+
+		export_html += clean_html
 		html_ascii = html_to_ascii(clean_html)
+
+		# print "\n\n ----------- \n\n"
+		# print html_ascii
+
 		tokens = tokenize(html_ascii)
 		total_sentences.append(sentence_parser(html_ascii))
 		total_words.append(tokens)
@@ -119,6 +130,7 @@ def parser(html, url, company, source, date, title, max_depth):
 	# WRITE DATA TO JSON
 	# if date != "NULL":
 	sentiment = total_score_avg
+	print export_html
 		# export_JSON(company, url, source, date, sublinks, total_sentences, total_words, sentiment, title, clean_html)
 	export_JSON_web(company, url, source, date, sublinks, total_sentences, total_words, sentiment, title, clean_html)
 

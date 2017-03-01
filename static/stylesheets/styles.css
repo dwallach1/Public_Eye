@@ -254,3 +254,14 @@ form {
 .fa:hover {
 	color: black;
 }
+
+.btn-default.raised {
+	box-shadow: 0 3px 0 0 #007299;
+}
+
+.btn-default.raised:active, .btn-default.raised.active {
+	background: #33a6cc;
+	box-shadow: none;
+	margin-bottom: -3px;
+	margin-top: 3px;
+}
