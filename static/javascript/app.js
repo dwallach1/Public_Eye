@@ -281,13 +281,31 @@ function buildDisplayData(json){
    div.id = 'data';
 
    div.innerHTML += '<h3 id="details">Data Gathered By <b>Public Eye</b>:</h2>';
+   var data = [];
+   // var x_axis = [];
    for(i=0;i<json.length;i++) {
       
       // i += 1
+      div.innerHTML += '<div id="chartContainer"> </div>';
+      div.innerHTML += '<canvas id="myChart" width="400" height="400"></canvas>'
       div.innerHTML += '<h3 id="title">' + j + '. ' +json[i]['title'] + '</h2>';
       div.innerHTML += '<p>' + json[i]['source'] + '</p>';
       div.innerHTML += '<p>' + json[i]['date'] + '</p>';
       div.innerHTML += '<p>' + json[i]['url'] + '</p>';
+      // x_axis.push(json[i]['date']);
+      if(json[i]['date'] != "NULL") {
+         var date = json[i]['date'];
+         var year = date.substring(0, 4);
+         var month = date.substring(11, 13);
+         var day = date.substring(5, 7);
+         console.log(date);
+         console.log(day);
+         console.log(month);
+         console.log(year);
+         data.push({x: new Date(year, month, day), y: json[i]['sentiment']});
+      }
+      
+
       // div.innerHTML += '<p>' + json[i]['sublinks'] + '</p>';
       // div.innerHTML += '<p>' + json[i]['article_data'] + '</p>';
       div.innerHTML += '<h3 id="sentiment">' + '<b>' + json[i]['sentiment'] + '</b>' + '</h3>';
@@ -314,6 +332,54 @@ function buildDisplayData(json){
        "padding": "14px 24px", "border": "0 none", "font-weight": "700", "letter-spacing": "1px","text-transform": "uppercase",
          "background-color": "#ffffff", "color": "#007ba7", "display":"inline-block"});
    
+   var chart = new CanvasJS.Chart("chartContainer", {
+            title: {
+               text: "Sentiment Values"
+            },
+            data: [{
+               type: "spline",
+               dataPoints: data
+            }]
+         });
+         chart.render();
+
+   var ctx = document.getElementById("myChart");
+   var myChart = new Chart(ctx, {
+       type: 'bar',
+       data: {
+           labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+           datasets: [{
+               label: '# of Votes',
+               data: [12, 19, 3, 5, 2, 3],
+               backgroundColor: [
+                   'rgba(255, 99, 132, 0.2)',
+                   'rgba(54, 162, 235, 0.2)',
+                   'rgba(255, 206, 86, 0.2)',
+                   'rgba(75, 192, 192, 0.2)',
+                   'rgba(153, 102, 255, 0.2)',
+                   'rgba(255, 159, 64, 0.2)'
+               ],
+               borderColor: [
+                   'rgba(255,99,132,1)',
+                   'rgba(54, 162, 235, 1)',
+                   'rgba(255, 206, 86, 1)',
+                   'rgba(75, 192, 192, 1)',
+                   'rgba(153, 102, 255, 1)',
+                   'rgba(255, 159, 64, 1)'
+               ],
+               borderWidth: 1
+           }]
+       },
+       options: {
+           scales: {
+               yAxes: [{
+                   ticks: {
+                       beginAtZero:true
+                   }
+               }]
+           }
+       }
+   });
 
   
    $('html, body').animate({
@@ -322,6 +388,18 @@ function buildDisplayData(json){
    hideSearchBackground()
 
 }
+
+jQuery(".canvasjs-chart-canvas").last().on("click", 
+      function(e){
+         var parentOffset = $(this).parent().offset();
+         var relX = e.pageX - parentOffset.left;
+         var relY = e.pageY - parentOffset.top
+         var xValue = Math.round(chart.axisX[0].convertPixelToValue(relX));
+         var yValue = Math.round(chart.axisY[0].convertPixelToValue(relY));
+      
+         chart.data[0].addTo("dataPoints", {x: xValue, y: yValue});
+         chart.axisX[0].set("maximum", Math.max(chart.axisX[0].maximum, xValue + 30));
+      });
 
 function showData() {
    console.log("in show data func");

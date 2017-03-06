@@ -1,7 +1,6 @@
 # Written by David Wallach
 # Copyright of Stocker.io 2017
-# This is the main calling function 
-# to run our algorithm 
+
 import urllib2
 from bs4 import BeautifulSoup
 import re
@@ -11,6 +10,7 @@ import httplib
 from dateutil.parser import parse as date_parser
 import requests
 import json
+import threading
 from flask import Flask, jsonify, render_template, request, Response
 
 app = Flask(__name__)
@@ -200,6 +200,7 @@ def web_scraper(queries, max_depth):
 	"""
 
 	print "got here in web scraper flask"
+	thread_inputs = []
 	i = 0 #used to send correct data to the get_info function
 	for i in range(0,len(queries)):
 
@@ -226,7 +227,7 @@ def web_scraper(queries, max_depth):
 		for item in soup.find_all('h3', attrs={'class' : 'r'}):
 		    line = (reg.match(item.a['href'][7:]).group())
 		    links.append(line[:-4])
-
+		    thread_inputs.append([line[:-4], queries[i][1], queries[i][0], 0, max_depth, True])
 		print links
 
 		#ADD SPACING
@@ -241,8 +242,24 @@ def web_scraper(queries, max_depth):
 			url = link.rstrip().replace("'","")
 			print url  
 		print '--------------------------------------' + bcolors.ENDC
-		get_info(links, queries[i][1], queries[i][0], 0, max_depth, True)
+		# get_info(links, queries[i][1], queries[i][0], 0, max_depth, True)
 		i += 1
+
+	threads = []
+	processes = []
+	for i in range(0, len(thread_inputs)):
+		print thread_inputs[i]
+		t = threading.Thread(target=get_info, args=([thread_inputs[i][0]], thread_inputs[i][1], thread_inputs[i][2], thread_inputs[i][3], thread_inputs[i][4], thread_inputs[i][5]))
+	   	threads.append(t)
+	   	t.start()
+
+	for i in range(0, len(threads)):
+		t = threads[i]
+		t.join()
+
+	print "threads done"
+	return 1
+
 
 def get_symbol(symbol):
 	"""
@@ -255,18 +272,6 @@ def get_symbol(symbol):
 		if x['symbol'] == symbol:
 			return x['name']
 
-
-def call_functions():
-	"""
-	call the functions to create queries and run web scraper
-	"""
-	companies = ["under armour", "apple", "go pro", "yahoo"]
-	news_sources = ["bloomberg", "seeking alpha", "market watch"]
-	extra_params = ["news", "stock", "investing"]
-	max_depth = 1
-	queries = build_queries(companies, news_sources, extra_params) #build the google search
-	web_scraper(queries, max_depth) #get the raw data from the query to be passed into get_info()
-
 def get_JSON():
 	with open('data.json') as data_file:
 		data = json.load(data_file)
@@ -276,13 +281,9 @@ def get_JSON():
 
 @app.route("/run_query/", methods=['GET'])
 def run_from_web():
-	print "in here"
 	company_ticker = request.args.get("company").upper()
 	news_sources = request.args.get("news_sources")
-	# news_sources = json.JSONDecoder(news_sources)
 	news_sources = json.loads(news_sources)
-	print news_sources
-	print company_ticker
 	extra_params = ["news"]
 	max_depth = 0
 	company_str = get_symbol(company_ticker)
@@ -301,8 +302,6 @@ def run_from_web():
         mimetype='application/json'
     )
 	print "returning data"
-
-	# return str(data)
 	return response
 
 @app.route('/about/')
@@ -326,22 +325,16 @@ def add_header(r):
     r.headers['Cache-Control'] = 'public, max-age=0'
     return r
 
-if __name__ == "__main__":
-	#Query information 
-	companies = ["under armour"]
-	news_sources = ["bloomberg"]
-	extra_params = ["news"]
-	max_depth = 0
-
-	app.run()
-
-	# company = get_symbol("AAPLfd")
-	# print(company)
-
-	# queries = build_queries(companies, news_sources, extra_params) #build the google search
-	# web_scraper(queries, max_depth) #get the raw data from the query to be passed into get_info()
+def main():
+	"""
+	call the functions to create queries and run web scraper
+	"""
+	companies = ["under armour", "apple", "go pro", "yahoo"]
+	news_sources = ["bloomberg", "seeking alpha", "market watch"]
+	extra_params = ["news", "stock", "investing"]
+	max_depth = 1
+	queries = build_queries(companies, news_sources, extra_params) #build the google search
+	web_scraper(queries, max_depth) #get the raw data from the query to be passed into get_info()
 	
-	# # getPerception.call_word_counter() #generate tuples of words and their count to export to .csv file
-
-
-
+if __name__ == "__main__":
+	app.run()

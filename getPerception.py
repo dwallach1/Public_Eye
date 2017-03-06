@@ -130,7 +130,7 @@ def parser(html, url, company, source, date, title, max_depth):
 	# WRITE DATA TO JSON
 	# if date != "NULL":
 	sentiment = total_score_avg
-	print export_html
+	# print export_html
 		# export_JSON(company, url, source, date, sublinks, total_sentences, total_words, sentiment, title, clean_html)
 	export_JSON_web(company, url, source, date, sublinks, total_sentences, total_words, sentiment, title, clean_html)
 
