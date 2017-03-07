@@ -261,6 +261,8 @@ $(function() {
 
 
 function buildDisplayData(json){
+   var company = document.getElementById('search').value;
+   var companyUpper = company.toUpperCase();
 
    var div_result = document.createElement('div');
    // document.getElementById("newsCheckList").appendChild(div_result);
@@ -281,13 +283,13 @@ function buildDisplayData(json){
    div.id = 'data';
 
    div.innerHTML += '<h3 id="details">Data Gathered By <b>Public Eye</b>:</h2>';
-   var data = [];
+   var dataPoints = [];
    // var x_axis = [];
    for(i=0;i<json.length;i++) {
       
       // i += 1
-      div.innerHTML += '<div id="chartContainer"> </div>';
-      div.innerHTML += '<canvas id="myChart" width="400" height="400"></canvas>'
+      div.innerHTML += '<canvas id="myChart" width="80vw" height="50vh"></canvas>'
+      div.innerHTML += '<img src = "https://chart.finance.yahoo.com/z?s='+companyUpper+'&t=1my&q=l&l=off&z=s&p=m50,m200">';
       div.innerHTML += '<h3 id="title">' + j + '. ' +json[i]['title'] + '</h2>';
       div.innerHTML += '<p>' + json[i]['source'] + '</p>';
       div.innerHTML += '<p>' + json[i]['date'] + '</p>';
@@ -302,7 +304,7 @@ function buildDisplayData(json){
          console.log(day);
          console.log(month);
          console.log(year);
-         data.push({x: new Date(year, month, day), y: json[i]['sentiment']});
+         dataPoints.push({x: new Date(year, month, day), y: json[i]['sentiment']});
       }
       
 
@@ -331,51 +333,22 @@ function buildDisplayData(json){
    $("#newQueryBtn").css({"text-align": "center", "margin-top": "20px", "margin-left":"540px", "btn-xl.round": "24px", 
        "padding": "14px 24px", "border": "0 none", "font-weight": "700", "letter-spacing": "1px","text-transform": "uppercase",
          "background-color": "#ffffff", "color": "#007ba7", "display":"inline-block"});
-   
-   var chart = new CanvasJS.Chart("chartContainer", {
-            title: {
-               text: "Sentiment Values"
-            },
-            data: [{
-               type: "spline",
-               dataPoints: data
-            }]
-         });
-         chart.render();
+
 
    var ctx = document.getElementById("myChart");
-   var myChart = new Chart(ctx, {
-       type: 'bar',
+   var scatterChart = new Chart(ctx, {
+       type: 'line',
        data: {
-           labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
            datasets: [{
-               label: '# of Votes',
-               data: [12, 19, 3, 5, 2, 3],
-               backgroundColor: [
-                   'rgba(255, 99, 132, 0.2)',
-                   'rgba(54, 162, 235, 0.2)',
-                   'rgba(255, 206, 86, 0.2)',
-                   'rgba(75, 192, 192, 0.2)',
-                   'rgba(153, 102, 255, 0.2)',
-                   'rgba(255, 159, 64, 0.2)'
-               ],
-               borderColor: [
-                   'rgba(255,99,132,1)',
-                   'rgba(54, 162, 235, 1)',
-                   'rgba(255, 206, 86, 1)',
-                   'rgba(75, 192, 192, 1)',
-                   'rgba(153, 102, 255, 1)',
-                   'rgba(255, 159, 64, 1)'
-               ],
-               borderWidth: 1
+               label: 'Public Sentiment',
+               data: dataPoints
            }]
        },
        options: {
            scales: {
-               yAxes: [{
-                   ticks: {
-                       beginAtZero:true
-                   }
+               xAxes: [{
+                   type: 'linear',
+                   position: 'bottom'
                }]
            }
        }
