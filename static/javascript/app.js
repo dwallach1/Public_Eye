@@ -39,12 +39,12 @@ $(function() {
       if($(this).hasClass("active")){
       	$(this).removeClass("active");
       	$(this).parent().parent().removeClass("active");
-      	var index = news_sources.indexOf("Bloomberg Business");
+      	var index = news_sources.indexOf("Bloomberg");
       	news_sources.splice(index, 1);
       } else {
       	$(this).addClass("active");
       	$(this).parent().parent().addClass("active");
-      	news_sources.push("Bloomberg Business");
+      	news_sources.push("Bloomberg");
       }
       console.log(news_sources)
    });
@@ -283,13 +283,12 @@ function buildDisplayData(json){
    div.id = 'data';
 
    div.innerHTML += '<h3 id="details">Data Gathered By <b>Public Eye</b>:</h2>';
+   div.innerHTML += '<img src = "https://chart.finance.yahoo.com/z?s='+companyUpper+'&t=1my&q=l&l=off&z=s&p=m50,m200">';
+   div.innerHTML += '<canvas id="myChart" width="80vw" height="50vh"></canvas>'
    var dataPoints = [];
    // var x_axis = [];
    for(i=0;i<json.length;i++) {
-      
-      // i += 1
-      div.innerHTML += '<canvas id="myChart" width="80vw" height="50vh"></canvas>'
-      div.innerHTML += '<img src = "https://chart.finance.yahoo.com/z?s='+companyUpper+'&t=1my&q=l&l=off&z=s&p=m50,m200">';
+         
       div.innerHTML += '<h3 id="title">' + j + '. ' +json[i]['title'] + '</h2>';
       div.innerHTML += '<p>' + json[i]['source'] + '</p>';
       div.innerHTML += '<p>' + json[i]['date'] + '</p>';

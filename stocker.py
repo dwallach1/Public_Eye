@@ -5,23 +5,43 @@ import urllib2
 from bs4 import BeautifulSoup
 import re
 import numpy as np
+import json
 import getPerception
 import httplib
 from dateutil.parser import parse as date_parser
 import requests
-import json
-import threading
+import threading 
+import nltk
+import pysentiment as ps
+from firebase import firebase
+import time
 from flask import Flask, jsonify, render_template, request, Response
 
 app = Flask(__name__)
 app.config["CACHE_TYPE"] = "null"
 # cache.init_app(app)
 
+tlock = threading.Lock()
+firebase = firebase.FirebaseApplication('https://public-eye-e4928.firebaseio.com/')
+
 global link_num 
 link_num = 1
 
 global total_urls
 total_urls = [] #to avoid repeats
+
+global data_glob
+data_glob = []
+
+global urls 
+urls = []
+
+global total_sentiment 
+total_sentiment = []
+
+global total_entries 
+total_entries = []
+
 
 class bcolors:
 	""" 
@@ -62,7 +82,7 @@ def build_queries(companies, news_sources, extra_params):
 	return queries
 
 
-def get_info(links, source, company, depth, max_depth, rstrip):
+def get_info(links, source, company, date, depth, max_depth, rstrip):
 	"""
 	parses the links and gathers all the sublinks as well as calls
 	other functions to gather the pertinent data and perform the sentiment analysis
@@ -78,7 +98,6 @@ def get_info(links, source, company, depth, max_depth, rstrip):
 			url = link.rstrip().replace("'","")
 		else:
 			url = link
-
 		if(url[0:4] != "http") or url[len(url) - 3:] == "jpg":
 			print "\n" + bcolors.FAIL + "URL is :" + url + bcolors.ENDC
 			print bcolors.FAIL + "Bad URL continuing to the next one" + bcolors.ENDC + "\n"
@@ -97,47 +116,26 @@ def get_info(links, source, company, depth, max_depth, rstrip):
 			page = urllib2.urlopen(req)
 			soup = BeautifulSoup(page.read().decode('utf-8', 'ignore'), "html.parser") #get all html info from webpage
 			article_title = soup.find_all("title") #used for printing title to user
+			sublinks_class = find_sublink_class(source)
 
-			article_date = soup.find_all("date")
-			if len(article_date) is 0:
-				article_date = soup.find_all("time")
-				try:
-					article_date = soup.time.attrs['datetime']
+			sublinks = soup.find_all(attrs={'class' : sublinks_class})
+			sublinks = sublink_parser(sublinks, source)
 
-				except KeyError:
-					print bcolors.WARNING + "\nKey error from datetime" + bcolors.ENDC
-					try: 
-						article_date = soup.find_all(id="published-timestamp")
-						article_date = re.findall(r'<span>(.*?)</',str(article_date),re.DOTALL)[0]
-					except (AttributeError, TypeError, KeyError, IndexError) as e:
-						print bcolors.WARNING + "Error is: " + str(e) + bcolors.ENDC
-						article_date = "NULL"
-				except AttributeError:
-					print bcolors.WARNING + "\nAttribute error from datetime" + bcolors.ENDC
-					try: 
-						article_date = soup.find_all(id="published-timestamp")
-						article_date = re.findall(r'<span>(.*?)</',str(article_date),re.DOTALL)[0]
-					except (AttributeError, TypeError, KeyError, IndexError) as e:
-						print bcolors.WARNING + "Eror from published-timestamp " + str(e) + bcolors.ENDC
-						article_date = "NULL"
-				except TypeError:
-					print bcolors.WARNING + "Type error from datetime" + bcolors.ENDC
-					article_date = "NULL" 
+			article_title = title_formatter(article_title)
 
-
-			article_title = make_title_pretty(article_title)
-			article_date = date_formatter(article_date)
-
+			tlock.acquire()
 			print "Scraping web for company : " + bcolors.HEADER + company.upper() + bcolors.ENDC
 			print "Currently parsing article : " + article_title + "\n" + "From source : "+ source 
 			print "URL is : " + url
-			print "Date posted : " + str(article_date)
+			print "Date posted : " + str(date)
 			print bcolors.OKGREEN + "HTTP Status of Request : " + str(page.getcode()) + "\n" + bcolors.ENDC
+			tlock.release()
 
 
 			soup = unicode.join(u'\n',map(unicode,soup))
-			suburls = getPerception.parser(soup, url, company, source, article_date, article_title, max_depth) #do the heavy lifting of breaking up the strings for the word counter
-		
+			# suburls = parser(soup, url, company, source, date, article_title, max_depth) #do the heavy lifting of breaking up the strings for the word counter
+			traverse_sublinks = parser(soup, url, company, source, date, article_title, max_depth)
+
 		except (urllib2.HTTPError, urllib2.URLError) as e:
 			try:
 				print bcolors.FAIL + "Uh oh there was an HTTP error with opening this url: \n" + str(url)+ "\n" + "Error code " + str(e.code) + "\n" + bcolors.ENDC
@@ -149,22 +147,15 @@ def get_info(links, source, company, depth, max_depth, rstrip):
 			print bcolors.FAIL + "\nUh oh we could not recognize the status code returned from the http request\n" + bcolors.ENDC
 			continue
 
-		
-		if depth < max_depth:
-			for link in suburls:
-				url = link.rstrip().replace("u'","")
-				url = link.rstrip().replace("'","")
-				url = re.findall(r'="(.*?)"', url)
-				try:
-					print "sublink url to traverse next: " + url[0]
-				except IndexError:
-					pass
-				get_info(url, source, company, depth+1, max_depth, False)
-
+		if traverse_sublinks and depth < max_depth:
+			for link in sublinks:
+				url = [link[0]]
+				date = link[1]
+				source = link[2].upper()
+				get_info(url, source, company, date, depth+1, max_depth, False)
 	
 
-
-def make_title_pretty(title_html):
+def title_formatter(title_html):
 	"""
 	used to remove the surrounding html from the article titles
 	"""
@@ -173,7 +164,6 @@ def make_title_pretty(title_html):
 		return title[0]
 	except IndexError:
 		return " "
-
 
 def date_formatter(date):
 	"""
@@ -190,6 +180,166 @@ def date_formatter(date):
 
 	return date_formatted
 
+def find_sublink_class(source):
+	"""
+	each of the finance websites company landing pages has different classes for related articles
+	this function directs the program to the proper one
+	"""
+	try:
+		return {
+		'Bloomberg': 'news-story',
+		'BLOOMBERG': 'news-story',
+		'SeekingAlpha': 'symbol_article'
+		}[source]
+	except TypeError:
+		return 'unknown'
+
+def sublink_parser(sublinks, source):
+	sublink_info = []
+	if source == 'Bloomberg':
+		for link in sublinks:
+			url = re.findall(r'href=.*?>',str(link))
+			url = url[0][6:len(url)-3]
+			date = re.findall(r'datetime=.*?>',str(link))
+			date = date[0][10:len(date)-3]
+
+			new_source = re.findall(r'www.*?com', url)
+			new_source = new_source[0][4:len(new_source)-5]
+			sublink_info.append([url, date, new_source])
+	tlock.acquire()
+	print sublink_info
+	tlock.release()
+	return sublink_info
+
+
+
+def parser(html, url, company, source, date, title, max_depth):
+	"""
+	returns the sublinks embedded in the article and
+	calls the tokenerizer and sentence parser methods as well as
+	the export_to_JSON function if JSON global variable is set to true
+	"""
+	global total_sentiment
+	global total_entries
+
+	pertinent_info = []
+	traverseFurther = False
+
+	export_html = ""
+	pattern = re.compile(r'<p>.*?</p>') #find only the ptag 
+	data = pattern.findall(html)
+	pertinent_info = pertinent_info + data
+	clean_html = ""
+	replace_dict = {'<p>': ' ', '</p>': ' ', 
+					'<strong>': '', '</strong>': ' ', 
+					'<a>': ' ','</a>': '',
+					'<em>': ' ', '</em>': ' ',
+					'<span>': ' ', '</span>': ' ',
+					'<meta>': ' ', '</meta>': ' ',
+					'&amp;apos;': ' '
+					} #html tags to remove
+
+	for info in pertinent_info:
+		tags = re.compile('|'.join(replace_dict.keys())) 
+		clean_html = tags.sub(lambda m: replace_dict[m.group(0)], info) #removing the html tags e.g. <p> and </p>
+		# sublinks_local = re.findall(r'<a.*?>', clean_html, re.DOTALL) #get all sublinks from inside paragraphs of HTML
+		clean_html = re.sub(r'<.*?>', ' ',clean_html) #remove all html tags 
+		clean_html = re.sub('[^A-Za-z0-9]+', ' ', clean_html, re.DOTALL) # get rid of extraneous characters
+
+
+		# if date == "NULL":
+		# 	print "date is null -- continue to next iteration"
+		# 	continue
+
+		export_html += clean_html 
+		
+	sentiment = get_score_LM(export_html)["Polarity"]
+
+	if sentiment == 0:
+		traverseFurther = True
+
+	if sentiment != 0:
+		total_sentiment.append(sentiment)
+		total_entries.append(1)
+
+	tlock.acquire()
+	print "--------------**********-------------------"
+	print bcolors.OKBLUE + "Score is : " + str(sentiment) +  " for url: " + url +bcolors.ENDC
+	# print export_html
+	print "--------------**********-------------------"
+	tlock.release()
+	export_JSON_web(company, url, source, date, sublinks, sentiment, title, export_html)
+	
+	return traverseFurther
+
+
+def export_JSON_web(company, url, source, date, sublinks, sentiment, title, article_data):
+	global data_glob
+	data = {
+		"title" : title,
+		"company" : company.upper(),
+		"source" : source,
+		"date" : date,
+		"url" : url,
+		"sublinks" : sublinks,
+		"article_data": article_data,
+		"sentiment": sentiment
+	}
+
+	data_glob.append(data)
+	urls.append(url)
+	# try:
+	# 	firebase.put('parsed_data',company.upper())
+	# 	firebase.put(company.upper(), data)
+	# except HTTPError:
+	# 	firebase.post('parsed_data',company.upper())
+	# 	firebase.post(company.upper(), data)
+	# try:
+	# 	firebase.put('URLS', urls)
+	# except HTTPError:
+	# 	firebase.post('URLS', urls)
+
+
+def return_JSON_List():
+	return data_glob
+
+def check_relevance(html, company):
+	"""
+	checks if article is relevant to the company the program is currently parsing for
+	"""
+
+	company_relevant = False
+	company_mentions = html
+	company_mentions = re.findall(company, company_mentions, re.I)
+	if len(company_mentions) > 0:
+		company_relevant = True
+	if company_relevant:
+		print bcolors.OKGREEN +"Article is relevant results : "  + str(company_relevant) + " For company : " + company.upper() + bcolors.ENDC
+	else:
+		print bcolors.FAIL +"Article is relevant results "  + str(company_relevant) + " For company : " + company.upper() + bcolors.ENDC
+	return company_relevant
+
+def timing(f):
+    def wrap(*args):
+        time1 = time.time()
+        ret = f(*args)
+        time2 = time.time()
+        print '%s function took %0.3f seconds' % (f.func_name, (time2-time1))
+        return ret
+    return wrap
+
+@timing
+def get_score_LM(html):
+	"""
+	Uses the Landom Mcdonald dictionary for sentiment analysis
+	"""
+	# print "getting sentiment"
+	lm = ps.LM()
+	tokens = lm.tokenize(html)
+	# print tokens
+	score = lm.get_score(tokens)
+	# print "returning sentiment"
+	return score 
 
 
 def web_scraper(queries, max_depth):
@@ -198,8 +348,6 @@ def web_scraper(queries, max_depth):
 	It sends the list of queries to google and gets a list of URLs from the google result.
 	It then calls get_info to get the necessary data from the URL
 	"""
-
-	print "got here in web scraper flask"
 	thread_inputs = []
 	i = 0 #used to send correct data to the get_info function
 	for i in range(0,len(queries)):
@@ -216,18 +364,20 @@ def web_scraper(queries, max_depth):
 		#Re to find URLS
 		reg=re.compile(".*&sa=")
 
-		#
-		# maybe search for dates in beautiful soups object --> class="f"
-		# get each object search from <div class="g"> tag until <!--n-->
-		#from there get the links the same way
-		# but also seek the date 
-
 		#get all web urls from google search result 
 		links = []
-		for item in soup.find_all('h3', attrs={'class' : 'r'}):
-		    line = (reg.match(item.a['href'][7:]).group())
-		    links.append(line[:-4])
-		    thread_inputs.append([line[:-4], queries[i][1], queries[i][0], 0, max_depth, True])
+		# for item in soup.find_all('h3', attrs={'class' : 'r'}):
+		for item in soup.find_all(attrs={'class' : 'g'}):
+			print "-----------------"
+			print item
+			print "-------------------"
+			link = (reg.match(item.a['href'][7:]).group())
+			date = re.findall(r'class="st">.*?<',str(item))
+			date = re.findall(r'>.*?<',str(date))
+			date = re.sub(r'[><]', '', str(date))
+			date = date_formatter(date[1:len(date)-1])
+		   	links.append(link[:-4])
+		   	thread_inputs.append([link[:-4], queries[i][1], queries[i][0], date, 0, max_depth, True])
 		print links
 
 		#ADD SPACING
@@ -242,24 +392,23 @@ def web_scraper(queries, max_depth):
 			url = link.rstrip().replace("'","")
 			print url  
 		print '--------------------------------------' + bcolors.ENDC
-		# get_info(links, queries[i][1], queries[i][0], 0, max_depth, True)
+		# get_info(links, queries[i][1], queries[i][0], date, 0, max_depth, True)
+		
 		i += 1
 
 	threads = []
-	processes = []
 	for i in range(0, len(thread_inputs)):
 		print thread_inputs[i]
-		t = threading.Thread(target=get_info, args=([thread_inputs[i][0]], thread_inputs[i][1], thread_inputs[i][2], thread_inputs[i][3], thread_inputs[i][4], thread_inputs[i][5]))
+		t = threading.Thread(target=get_info, args=([thread_inputs[i][0]], thread_inputs[i][1], thread_inputs[i][2], thread_inputs[i][3], thread_inputs[i][4], thread_inputs[i][5], thread_inputs[i][6]))
 	   	threads.append(t)
 	   	t.start()
 
 	for i in range(0, len(threads)):
-		t = threads[i]
-		t.join()
+	   	t = threads[i]
+	   	t.join()
 
-	print "threads done"
-	return 1
-
+# def gather_stock_data():
+	#http://chart.finance.yahoo.com/table.csv?s=UA&a=2&b=6&c=2012&d=2&e=6&f=2017&g=d&ignore=.csv
 
 def get_symbol(symbol):
 	"""
@@ -272,20 +421,16 @@ def get_symbol(symbol):
 		if x['symbol'] == symbol:
 			return x['name']
 
-def get_JSON():
-	with open('data.json') as data_file:
-		data = json.load(data_file)
-		return data
-
 
 
 @app.route("/run_query/", methods=['GET'])
+@timing 
 def run_from_web():
 	company_ticker = request.args.get("company").upper()
 	news_sources = request.args.get("news_sources")
 	news_sources = json.loads(news_sources)
 	extra_params = ["news"]
-	max_depth = 0
+	max_depth = 1
 	company_str = get_symbol(company_ticker)
 	if company_str is None:
 		return {"error", "bad_ticker"}
@@ -294,8 +439,9 @@ def run_from_web():
 	queries = build_queries(company, news_sources, extra_params)
 	print "queriees have been built"
 	web_scraper(queries, max_depth)
-	data = getPerception.return_JSON_List()
-	print data
+	print sum(total_sentiment)/len(total_entries)
+	data = return_JSON_List()
+	# print data
 	response = app.response_class(
         response=json.dumps(data),
         status=200,
@@ -335,6 +481,7 @@ def main():
 	max_depth = 1
 	queries = build_queries(companies, news_sources, extra_params) #build the google search
 	web_scraper(queries, max_depth) #get the raw data from the query to be passed into get_info()
+
 	
 if __name__ == "__main__":
 	app.run()
