@@ -50,7 +50,7 @@ $(function() {
    });
  });
 
- $(function() {
+$(function() {
    $("#yahooFinance").click(function(e) {
       if($(this).hasClass("active")){
       	$(this).removeClass("active");
@@ -66,7 +66,7 @@ $(function() {
    });
  });
 
- $(function() {
+$(function() {
    $("#motleyFool").click(function(e) {
       if($(this).hasClass("active")){
       	$(this).removeClass("active");
@@ -257,16 +257,11 @@ $(function() {
 });
 
 
-
-
-
 function buildDisplayData(json){
    var company = document.getElementById('search').value;
    var companyUpper = company.toUpperCase();
 
    var div_result = document.createElement('div');
-   // document.getElementById("newsCheckList").appendChild(div_result);
-   // document.body.appendChild(div_result);
    document.body.insertBefore(div_result, document.getElementById("footer"));
    div_result.id = 'results';
    div_result.innerHTML += '<h1>Here are the results for '+ json[0]['company'] +'</h1>';
@@ -277,8 +272,6 @@ function buildDisplayData(json){
    var inputs = 0;
    var j = 1;
    var div = document.createElement('div');
-   // document.getElementById("newsCheckList").appendChild(div); 
-   // document.body.appendChild(div);
    document.body.insertBefore(div, document.getElementById("footer"));
    div.id = 'data';
 
@@ -306,9 +299,6 @@ function buildDisplayData(json){
          dataPoints.push({x: new Date(year, month, day), y: json[i]['sentiment']});
       }
       
-
-      // div.innerHTML += '<p>' + json[i]['sublinks'] + '</p>';
-      // div.innerHTML += '<p>' + json[i]['article_data'] + '</p>';
       div.innerHTML += '<h3 id="sentiment">' + '<b>' + json[i]['sentiment'] + '</b>' + '</h3>';
       if(json[i]['sentiment'] != 0){
          sentiment += json[i]['sentiment'];

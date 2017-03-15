@@ -6,7 +6,6 @@ from bs4 import BeautifulSoup
 import re
 import numpy as np
 import json
-import getPerception
 import httplib
 from dateutil.parser import parse as date_parser
 import requests
@@ -56,10 +55,8 @@ class bcolors:
    	BOLD = '\033[1m'
    	UNDERLINE = '\033[4m'
 
-
 ## make a class for a google result with the link, date, query, company, news_source 
 ## a boolean if it is a sublink ect. mainly just the link and the date 
-
 
 def build_queries(companies, news_sources, extra_params):
 	"""
@@ -80,7 +77,6 @@ def build_queries(companies, news_sources, extra_params):
 	for i in queries:
 		print(bcolors.OKBLUE + i[0] + " " + i[1] + " " + i[2] + bcolors.ENDC)
 	return queries
-
 
 def get_info(links, source, company, date, depth, max_depth, rstrip):
 	"""
@@ -152,8 +148,7 @@ def get_info(links, source, company, date, depth, max_depth, rstrip):
 				url = [link[0]]
 				date = link[1]
 				source = link[2].upper()
-				get_info(url, source, company, date, depth+1, max_depth, False)
-	
+				get_info(url, source, company, date, depth+1, max_depth, False)	
 
 def title_formatter(title_html):
 	"""
@@ -211,8 +206,6 @@ def sublink_parser(sublinks, source):
 	tlock.release()
 	return sublink_info
 
-
-
 def parser(html, url, company, source, date, title, max_depth):
 	"""
 	returns the sublinks embedded in the article and
@@ -229,6 +222,15 @@ def parser(html, url, company, source, date, title, max_depth):
 	pattern = re.compile(r'<p>.*?</p>') #find only the ptag 
 	data = pattern.findall(html)
 	pertinent_info = pertinent_info + data
+	commentSoup = BeautifulSoup(html)
+	preTags = commentSoup.findAll('pre')
+	try:
+		data2 = preTags[0]
+		print data2
+		pertinent_info += data2
+	except:
+		pass	
+
 	clean_html = ""
 	replace_dict = {'<p>': ' ', '</p>': ' ', 
 					'<strong>': '', '</strong>': ' ', 
@@ -268,12 +270,11 @@ def parser(html, url, company, source, date, title, max_depth):
 	# print export_html
 	print "--------------**********-------------------"
 	tlock.release()
-	export_JSON_web(company, url, source, date, sublinks, sentiment, title, export_html)
+	export_JSON_web(company, url, source, date, sentiment, title, export_html)
 	
 	return traverseFurther
 
-
-def export_JSON_web(company, url, source, date, sublinks, sentiment, title, article_data):
+def export_JSON_web(company, url, source, date, sentiment, title, article_data):
 	global data_glob
 	data = {
 		"title" : title,
@@ -281,7 +282,7 @@ def export_JSON_web(company, url, source, date, sublinks, sentiment, title, arti
 		"source" : source,
 		"date" : date,
 		"url" : url,
-		"sublinks" : sublinks,
+		# "sublinks" : sublinks,
 		"article_data": article_data,
 		"sentiment": sentiment
 	}
@@ -298,7 +299,6 @@ def export_JSON_web(company, url, source, date, sublinks, sentiment, title, arti
 	# 	firebase.put('URLS', urls)
 	# except HTTPError:
 	# 	firebase.post('URLS', urls)
-
 
 def return_JSON_List():
 	return data_glob
@@ -368,9 +368,9 @@ def web_scraper(queries, max_depth):
 		links = []
 		# for item in soup.find_all('h3', attrs={'class' : 'r'}):
 		for item in soup.find_all(attrs={'class' : 'g'}):
-			print "-----------------"
-			print item
-			print "-------------------"
+			# print "-----------------"
+			# print item
+			# print "-------------------"
 			link = (reg.match(item.a['href'][7:]).group())
 			date = re.findall(r'class="st">.*?<',str(item))
 			date = re.findall(r'>.*?<',str(date))
@@ -432,6 +432,9 @@ def run_from_web():
 	extra_params = ["news"]
 	max_depth = 1
 	company_str = get_symbol(company_ticker)
+	company_str = re.sub(r', Inc\.', '', company_str)
+	company_str = re.sub(r'Corporation', '', company_str)
+	print "company_str is:" + company_str
 	if company_str is None:
 		return {"error", "bad_ticker"}
 
@@ -458,7 +461,6 @@ def about():
 def index():
 	return render_template('index.html')
 
-
 @app.after_request
 def add_header(r):
     """
@@ -481,7 +483,6 @@ def main():
 	max_depth = 1
 	queries = build_queries(companies, news_sources, extra_params) #build the google search
 	web_scraper(queries, max_depth) #get the raw data from the query to be passed into get_info()
-
 	
 if __name__ == "__main__":
 	app.run()
