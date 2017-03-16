@@ -1,198 +1,5 @@
 var news_sources = [];
 
-$(function() {
-   $("#marketWatch").click(function(e) {
-      if($(this).hasClass("active")){
-      	$(this).removeClass("active");
-      	$(this).parent().parent().removeClass("active");
-      	var index = news_sources.indexOf("MarketWatch");
-      	news_sources.splice(index, 1);
-      } else {
-      	$(this).addClass("active");
-      	$(this).parent().parent().addClass("active");
-      	// news_sources.concat(["MarketWatch"]);
-      	news_sources.push("MarketWatch");
-      }
-      console.log(news_sources);
-   });
-});
-
-$(function() {
-   $("#seekingAlpha").click(function(e) {
-      if($(this).hasClass("active")){
-      	$(this).removeClass("active");
-      	$(this).parent().parent().removeClass("active");
-      	var index = news_sources.indexOf("SeekingAlpha");
-      	news_sources.splice(index, 1);
-      } else {
-      	$(this).addClass("active");
-      	$(this).parent().parent().addClass("active");
-      	news_sources.push("SeekingAlpha");
-      }
-      console.log(news_sources);
-   });
-});
-
-$(function() {
-   $("#bloombergBusiness").click(function(e) {
-
-      if($(this).hasClass("active")){
-      	$(this).removeClass("active");
-      	$(this).parent().parent().removeClass("active");
-      	var index = news_sources.indexOf("Bloomberg");
-      	news_sources.splice(index, 1);
-      } else {
-      	$(this).addClass("active");
-      	$(this).parent().parent().addClass("active");
-      	news_sources.push("Bloomberg");
-      }
-      console.log(news_sources)
-   });
- });
-
-$(function() {
-   $("#yahooFinance").click(function(e) {
-      if($(this).hasClass("active")){
-      	$(this).removeClass("active");
-      	$(this).parent().parent().removeClass("active");
-      	var index = news_sources.indexOf("Yahoo Finance");
-      	news_sources.splice(index, 1);
-      } else {
-      	$(this).addClass("active");
-      	$(this).parent().parent().addClass("active");
-      	news_sources.push("Yahoo Finance");
-      }
-      console.log(news_sources);
-   });
- });
-
-$(function() {
-   $("#motleyFool").click(function(e) {
-      if($(this).hasClass("active")){
-      	$(this).removeClass("active");
-      	$(this).parent().parent().removeClass("active");
-      	var index = news_sources.indexOf("Motley Fool");
-      	news_sources.splice(index, 1);
-      } else {
-      	$(this).addClass("active");
-      	$(this).parent().parent().addClass("active");
-		news_sources.push("Motley Fool");
-      }
-      console.log(news_sources);
-   });
- });
-
-$(function() {
-   $("#reuters").click(function(e) {
-      if($(this).hasClass("active")){
-      	$(this).removeClass("active");
-      	$(this).parent().parent().removeClass("active");
-      	var index = news_sources.indexOf("Reuters");
-      	news_sources.splice(index, 1);
-      } else {
-      	$(this).addClass("active");
-      	$(this).parent().parent().addClass("active");
-      	news_sources.push("Reuters");
-      }
-      console.log(news_sources);
-   });
- });
-
-$(function() {
-   $("#WSJ").click(function(e) {
-      if($(this).hasClass("active")){
-      	$(this).removeClass("active");
-      	$(this).parent().parent().removeClass("active");
-      	var index = news_sources.indexOf("Wall Street Journal");
-      	news_sources.splice(index, 1);
-      } else {
-      	$(this).addClass("active");
-      	$(this).parent().parent().addClass("active");
-      	news_sources.push("Wall Street Journal");
-      }
-      console.log(news_sources);
-   });
- });
-
-$(function() {
-   $("#financialTimes").click(function(e) {
-      if($(this).hasClass("active")){
-      	$(this).removeClass("active");
-      	$(this).parent().parent().removeClass("active");
-      	var index = news_sources.indexOf("Financial Times");
-      	news_sources.splice(index, 1);
-      } else {
-      	$(this).addClass("active");
-      	$(this).parent().parent().addClass("active");
-      	news_sources.push("Financial Times");
-      }
-      console.log(news_sources);
-   });
- });
-
-$(function() {
-   $("#CNBC").click(function(e) {
-      if($(this).hasClass("active")){
-      	$(this).removeClass("active");
-      	$(this).parent().parent().removeClass("active");
-      	var index = news_sources.indexOf("CNBC");
-      	news_sources.splice(index, 1);
-      } else {
-      	$(this).addClass("active");
-      	$(this).parent().parent().addClass("active");
-      	news_sources.push("CNBC");
-      }
-      console.log(news_sources);
-   });
- });
-
-$(function() {
-   $("#IBTimes").click(function(e) {
-      if($(this).hasClass("active")){
-      	$(this).removeClass("active");
-      	$(this).parent().parent().removeClass("active");
-      	var index = news_sources.indexOf("IBTimes");
-      	news_sources.splice(index, 1);
-      } else {
-      	$(this).addClass("active");
-      	$(this).parent().parent().addClass("active");
-      	news_sources.push("IBTimes");
-      }
-      console.log(news_sources);
-   });
- });
-
-$(function() {
-   $("#googleFinance").click(function(e) {
-      if($(this).hasClass("active")){
-      	$(this).removeClass("active");
-      	$(this).parent().parent().removeClass("active");
-      	var index = news_sources.indexOf("Google Finance");
-      	news_sources.splice(index, 1);
-      } else {
-      	$(this).addClass("active");
-      	$(this).parent().parent().addClass("active");
-      	news_sources.push("Google Finance");
-      }
-      console.log(news_sources);
-   });
- });
-
-$(function() {
-   $("#businessInsider").click(function(e) {
-      if($(this).hasClass("active")){
-      	$(this).removeClass("active");
-      	$(this).parent().parent().removeClass("active");
-      	var index = news_sources.indexOf("Business Insider");
-      	news_sources.splice(index, 1);
-      } else {
-      	$(this).addClass("active");
-      	$(this).parent().parent().addClass("active");
-      	news_sources.push("Business Insider");
-      }
-      console.log(news_sources);
-   });
- });
 
 $(function() {
 	$("#submit").click(function() {
@@ -225,13 +32,8 @@ $(function() {
                         },
 		            type: 'GET',
 		            success: function(response) {
-                     console.log("success");
-                     console.log(response);
-                     // var n = response.length;
-                     // response = response.substring(1,n-1);
-                     // console.log(response);
-                     // var json = JSON.parse(response);
-                     buildDisplayData(response);
+
+                     buildDisplayData(response, company);
 		            },
 		            error: function(error) {
                      hideSearchBackground()
@@ -240,7 +42,6 @@ $(function() {
                                  scrollTop: $("#tickerError").offset().top
                         }, 1000);
                                        
-                  		                // console.log(error);
                       console.log("there was an error");
 		            }
 		        });
@@ -257,7 +58,7 @@ $(function() {
 });
 
 
-function buildDisplayData(json){
+function buildDisplayData(json, company){
    var company = document.getElementById('search').value;
    var companyUpper = company.toUpperCase();
 
@@ -277,26 +78,32 @@ function buildDisplayData(json){
 
    div.innerHTML += '<h3 id="details">Data Gathered By <b>Public Eye</b>:</h2>';
    div.innerHTML += '<img src = "https://chart.finance.yahoo.com/z?s='+companyUpper+'&t=1my&q=l&l=off&z=s&p=m50,m200">';
-   div.innerHTML += '<canvas id="myChart" width="80vw" height="50vh"></canvas>'
+   div.innerHTML += '<canvas id="myChart" width="80vw" height="50vh"></canvas>';
+   div.innerHTML += '<div id="chartDemoContainer"></div>';
+   markit(company, 100);
    var dataPoints = [];
    // var x_axis = [];
+   // var y_axis = [];
    for(i=0;i<json.length;i++) {
          
       div.innerHTML += '<h3 id="title">' + j + '. ' +json[i]['title'] + '</h2>';
       div.innerHTML += '<p>' + json[i]['source'] + '</p>';
       div.innerHTML += '<p>' + json[i]['date'] + '</p>';
       div.innerHTML += '<p>' + json[i]['url'] + '</p>';
-      // x_axis.push(json[i]['date']);
+
       if(json[i]['date'] != "NULL") {
-         var date = json[i]['date'];
-         var year = date.substring(0, 4);
-         var month = date.substring(11, 13);
-         var day = date.substring(5, 7);
+         var date_json = json[i]['date'];
+         var year = date_json.substring(0, 4);
+         var month = date_json.substring(11, 13);
+         var day = date_json.substring(5, 7);
+         var date = new Date(year, month, day);
+         console.log('inserting');
          console.log(date);
          console.log(day);
          console.log(month);
          console.log(year);
-         dataPoints.push({x: new Date(year, month, day), y: json[i]['sentiment']});
+         // dataPoints.push({x: date_json, y: json[i]['sentiment']});
+         dataPoints.push([date, json[i]['sentiment']]);
       }
       
       div.innerHTML += '<h3 id="sentiment">' + '<b>' + json[i]['sentiment'] + '</b>' + '</h3>';
@@ -324,6 +131,18 @@ function buildDisplayData(json){
          "background-color": "#ffffff", "color": "#007ba7", "display":"inline-block"});
 
 
+   console.log('logging datapoints');
+   console.log(dataPoints);
+
+   dataPoints.sort(function(a,b){ return a[0] - b[0]; })
+   console.log('logging sorted datapoints');
+   console.log(dataPoints);
+
+   // var dp = consolidateDataPoints(dataPoints);
+
+   // console.log('logging consolidated data');
+   // console.log(dp);
+
    var ctx = document.getElementById("myChart");
    var scatterChart = new Chart(ctx, {
        type: 'line',
@@ -342,26 +161,223 @@ function buildDisplayData(json){
            }
        }
    });
-
   
    $('html, body').animate({
       scrollTop: $("#results").offset().top
       }, 1000);
-   hideSearchBackground()
-
+   hideSearchBackground() 
 }
 
-jQuery(".canvasjs-chart-canvas").last().on("click", 
-      function(e){
-         var parentOffset = $(this).parent().offset();
-         var relX = e.pageX - parentOffset.left;
-         var relY = e.pageY - parentOffset.top
-         var xValue = Math.round(chart.axisX[0].convertPixelToValue(relX));
-         var yValue = Math.round(chart.axisY[0].convertPixelToValue(relY));
+function consolidateDataPoints(dp) {
+   var currDate;
+   var sentiment;
+   var entries;
+   var i;
+   var j;
+
+   for(i=0; i < dp.length; i++){
+      sentiment = dp[i]['y'];
+      entries = 1;
+      currDate = dp[i]['x'];
+      for(j=1; j < dp.length; j++){
+         if (dp[j]['x'] == null) { continue; }
+         if (dp[j]['x'] == currDate) {
+            entries++;
+            sentiment += dp[j]['y'];
+            dp[j]['x'] = null;
+         }
+      }
+      dp[i]['y'] =  sentiment /entries;  
+   }
+   console.log('logging dp before removal of nulls');
+   console.log(dp);
+
+   // for (i=0; i<dp.length; i++){
+   //    if (dp[i]['x'] == null) { dp.splice(i,1); }
+   // }
       
-         chart.data[0].addTo("dataPoints", {x: xValue, y: yValue});
-         chart.axisX[0].set("maximum", Math.max(chart.axisX[0].maximum, xValue + 30));
-      });
+   return dp;
+}
+
+function markit(symbol, duration) {
+   /** 
+    * Version 2.0
+    */
+   var Markit = {};
+   /**
+    * Define the InteractiveChartApi.
+    * First argument is symbol (string) for the quote. Examples: AAPL, MSFT, JNJ, GOOG.
+    * Second argument is duration (int) for how many days of history to retrieve.
+    */
+   Markit.InteractiveChartApi = function(symbol,duration){
+       this.symbol = symbol.toUpperCase();
+       this.duration = duration;
+       this.PlotChart();
+   };
+
+   Markit.InteractiveChartApi.prototype.PlotChart = function(){
+       
+       var params = {
+           parameters: JSON.stringify( this.getInputParams() )
+       }
+
+       //Make JSON request for timeseries data
+       $.ajax({
+           beforeSend:function(){
+               $("#chartDemoContainer").text("Loading chart...");
+           },
+           data: params,
+           url: "http://dev.markitondemand.com/Api/v2/InteractiveChart/jsonp",
+           dataType: "jsonp",
+           context: this,
+           success: function(json){
+               //Catch errors
+               if (!json || json.Message){
+                   console.error("Error: ", json.Message);
+                   return;
+               }
+               this.render(json);
+           },
+           error: function(response,txtStatus){
+               console.log(response,txtStatus)
+           }
+       });
+   };
+
+   Markit.InteractiveChartApi.prototype.getInputParams = function(){
+       return {  
+           Normalized: false,
+           NumberOfDays: this.duration,
+           DataPeriod: "Day",
+           Elements: [
+               {
+                   Symbol: this.symbol,
+                   Type: "price",
+                   Params: ["ohlc"] //ohlc, c = close only
+               },
+               {
+                   Symbol: this.symbol,
+                   Type: "volume"
+               }
+           ]
+           //,LabelPeriod: 'Week',
+           //LabelInterval: 1
+       }
+   };
+
+   Markit.InteractiveChartApi.prototype._fixDate = function(dateIn) {
+       var dat = new Date(dateIn);
+       return Date.UTC(dat.getFullYear(), dat.getMonth(), dat.getDate());
+   };
+
+   Markit.InteractiveChartApi.prototype._getOHLC = function(json) {
+       var dates = json.Dates || [];
+       var elements = json.Elements || [];
+       var chartSeries = [];
+
+       if (elements[0]){
+
+           for (var i = 0, datLen = dates.length; i < datLen; i++) {
+               var dat = this._fixDate( dates[i] );
+               var pointData = [
+                   dat,
+                   elements[0].DataSeries['open'].values[i],
+                   elements[0].DataSeries['high'].values[i],
+                   elements[0].DataSeries['low'].values[i],
+                   elements[0].DataSeries['close'].values[i]
+               ];
+               chartSeries.push( pointData );
+           };
+       }
+       return chartSeries;
+   };
+
+   Markit.InteractiveChartApi.prototype._getVolume = function(json) {
+       var dates = json.Dates || [];
+       var elements = json.Elements || [];
+       var chartSeries = [];
+
+       if (elements[1]){
+
+           for (var i = 0, datLen = dates.length; i < datLen; i++) {
+               var dat = this._fixDate( dates[i] );
+               var pointData = [
+                   dat,
+                   elements[1].DataSeries['volume'].values[i]
+               ];
+               chartSeries.push( pointData );
+           };
+       }
+       return chartSeries;
+   };
+
+   Markit.InteractiveChartApi.prototype.render = function(data) {
+       //console.log(data)
+       // split the data set into ohlc and volume
+       var ohlc = this._getOHLC(data),
+           volume = this._getVolume(data);
+
+       // set the allowed units for data grouping
+       var groupingUnits = [[
+           'week',                         // unit name
+           [1]                             // allowed multiples
+       ], [
+           'month',
+           [1, 2, 3, 4, 6]
+       ]];
+
+       // create the chart
+       $('#chartDemoContainer').highcharts('StockChart', {
+           
+           rangeSelector: {
+               selected: 1
+               //enabled: false
+           },
+
+           title: {
+               text: this.symbol + ' Historical Price'
+           },
+
+           yAxis: [{
+               title: {
+                   text: 'OHLC'
+               },
+               height: 200,
+               lineWidth: 2
+           }, {
+               title: {
+                   text: 'Volume'
+               },
+               top: 300,
+               height: 100,
+               offset: 0,
+               lineWidth: 2
+           }],
+           
+           series: [{
+               type: 'candlestick',
+               name: this.symbol,
+               data: ohlc,
+               dataGrouping: {
+                   units: groupingUnits
+               }
+           }, {
+               type: 'column',
+               name: 'Volume',
+               data: volume,
+               yAxis: 1,
+               dataGrouping: {
+                   units: groupingUnits
+               }
+           }],
+           credits: {
+               enabled:false
+           }
+       });
+   };
+}
+
+
 
 function showData() {
    console.log("in show data func");
@@ -427,4 +443,199 @@ $(document).ready(function() {
   });
 });
 
+
+/** FOR BUTTON CLICKING PROCESSING ***/
+$(function() {
+   $("#marketWatch").click(function(e) {
+      if($(this).hasClass("active")){
+         $(this).removeClass("active");
+         $(this).parent().parent().removeClass("active");
+         var index = news_sources.indexOf("MarketWatch");
+         news_sources.splice(index, 1);
+      } else {
+         $(this).addClass("active");
+         $(this).parent().parent().addClass("active");
+         // news_sources.concat(["MarketWatch"]);
+         news_sources.push("MarketWatch");
+      }
+      console.log(news_sources);
+   });
+});
+
+$(function() {
+   $("#seekingAlpha").click(function(e) {
+      if($(this).hasClass("active")){
+         $(this).removeClass("active");
+         $(this).parent().parent().removeClass("active");
+         var index = news_sources.indexOf("SeekingAlpha");
+         news_sources.splice(index, 1);
+      } else {
+         $(this).addClass("active");
+         $(this).parent().parent().addClass("active");
+         news_sources.push("SeekingAlpha");
+      }
+      console.log(news_sources);
+   });
+});
+
+$(function() {
+   $("#bloombergBusiness").click(function(e) {
+
+      if($(this).hasClass("active")){
+         $(this).removeClass("active");
+         $(this).parent().parent().removeClass("active");
+         var index = news_sources.indexOf("Bloomberg");
+         news_sources.splice(index, 1);
+      } else {
+         $(this).addClass("active");
+         $(this).parent().parent().addClass("active");
+         news_sources.push("Bloomberg");
+      }
+      console.log(news_sources)
+   });
+ });
+
+$(function() {
+   $("#yahooFinance").click(function(e) {
+      if($(this).hasClass("active")){
+         $(this).removeClass("active");
+         $(this).parent().parent().removeClass("active");
+         var index = news_sources.indexOf("Yahoo Finance");
+         news_sources.splice(index, 1);
+      } else {
+         $(this).addClass("active");
+         $(this).parent().parent().addClass("active");
+         news_sources.push("Yahoo Finance");
+      }
+      console.log(news_sources);
+   });
+ });
+
+$(function() {
+   $("#motleyFool").click(function(e) {
+      if($(this).hasClass("active")){
+         $(this).removeClass("active");
+         $(this).parent().parent().removeClass("active");
+         var index = news_sources.indexOf("Motley Fool");
+         news_sources.splice(index, 1);
+      } else {
+         $(this).addClass("active");
+         $(this).parent().parent().addClass("active");
+      news_sources.push("Motley Fool");
+      }
+      console.log(news_sources);
+   });
+ });
+
+$(function() {
+   $("#reuters").click(function(e) {
+      if($(this).hasClass("active")){
+         $(this).removeClass("active");
+         $(this).parent().parent().removeClass("active");
+         var index = news_sources.indexOf("Reuters");
+         news_sources.splice(index, 1);
+      } else {
+         $(this).addClass("active");
+         $(this).parent().parent().addClass("active");
+         news_sources.push("Reuters");
+      }
+      console.log(news_sources);
+   });
+ });
+
+$(function() {
+   $("#WSJ").click(function(e) {
+      if($(this).hasClass("active")){
+         $(this).removeClass("active");
+         $(this).parent().parent().removeClass("active");
+         var index = news_sources.indexOf("Wall Street Journal");
+         news_sources.splice(index, 1);
+      } else {
+         $(this).addClass("active");
+         $(this).parent().parent().addClass("active");
+         news_sources.push("Wall Street Journal");
+      }
+      console.log(news_sources);
+   });
+ });
+
+$(function() {
+   $("#financialTimes").click(function(e) {
+      if($(this).hasClass("active")){
+         $(this).removeClass("active");
+         $(this).parent().parent().removeClass("active");
+         var index = news_sources.indexOf("Financial Times");
+         news_sources.splice(index, 1);
+      } else {
+         $(this).addClass("active");
+         $(this).parent().parent().addClass("active");
+         news_sources.push("Financial Times");
+      }
+      console.log(news_sources);
+   });
+ });
+
+$(function() {
+   $("#CNBC").click(function(e) {
+      if($(this).hasClass("active")){
+         $(this).removeClass("active");
+         $(this).parent().parent().removeClass("active");
+         var index = news_sources.indexOf("CNBC");
+         news_sources.splice(index, 1);
+      } else {
+         $(this).addClass("active");
+         $(this).parent().parent().addClass("active");
+         news_sources.push("CNBC");
+      }
+      console.log(news_sources);
+   });
+ });
+
+$(function() {
+   $("#IBTimes").click(function(e) {
+      if($(this).hasClass("active")){
+         $(this).removeClass("active");
+         $(this).parent().parent().removeClass("active");
+         var index = news_sources.indexOf("IBTimes");
+         news_sources.splice(index, 1);
+      } else {
+         $(this).addClass("active");
+         $(this).parent().parent().addClass("active");
+         news_sources.push("IBTimes");
+      }
+      console.log(news_sources);
+   });
+ });
+
+$(function() {
+   $("#googleFinance").click(function(e) {
+      if($(this).hasClass("active")){
+         $(this).removeClass("active");
+         $(this).parent().parent().removeClass("active");
+         var index = news_sources.indexOf("Google Finance");
+         news_sources.splice(index, 1);
+      } else {
+         $(this).addClass("active");
+         $(this).parent().parent().addClass("active");
+         news_sources.push("Google Finance");
+      }
+      console.log(news_sources);
+   });
+ });
+
+$(function() {
+   $("#businessInsider").click(function(e) {
+      if($(this).hasClass("active")){
+         $(this).removeClass("active");
+         $(this).parent().parent().removeClass("active");
+         var index = news_sources.indexOf("Business Insider");
+         news_sources.splice(index, 1);
+      } else {
+         $(this).addClass("active");
+         $(this).parent().parent().addClass("active");
+         news_sources.push("Business Insider");
+      }
+      console.log(news_sources);
+   });
+ });
 

@@ -30,15 +30,15 @@ global total_urls
 total_urls = [] #to avoid repeats
 
 global data_glob
-data_glob = []
+data_glob = [] #to accumulate total data per article consolidated from threads
 
-global urls 
+global urls #maybe unused can possibly get rid of
 urls = []
 
-global total_sentiment 
+global total_sentiment #used only for testing correctness in output
 total_sentiment = []
 
-global total_entries 
+global total_entries #used only for testing correctness in output
 total_entries = []
 
 
@@ -226,7 +226,7 @@ def parser(html, url, company, source, date, title, max_depth):
 	preTags = commentSoup.findAll('pre')
 	try:
 		data2 = preTags[0]
-		print data2
+		# print data2
 		pertinent_info += data2
 	except:
 		pass	
@@ -366,7 +366,6 @@ def web_scraper(queries, max_depth):
 
 		#get all web urls from google search result 
 		links = []
-		# for item in soup.find_all('h3', attrs={'class' : 'r'}):
 		for item in soup.find_all(attrs={'class' : 'g'}):
 			# print "-----------------"
 			# print item
@@ -420,8 +419,6 @@ def get_symbol(symbol):
 	for x in result['ResultSet']['Result']:
 		if x['symbol'] == symbol:
 			return x['name']
-
-
 
 @app.route("/run_query/", methods=['GET'])
 @timing 
