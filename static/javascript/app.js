@@ -93,11 +93,12 @@ function buildDisplayData(json, company){
 
       if(json[i]['date'] != "NULL") {
          var date_json = json[i]['date'];
-         var year = date_json.substring(0, 4);
-         var month = date_json.substring(11, 13);
-         var day = date_json.substring(5, 7);
-         var date = new Date(year, month, day);
+         var year = parseInt(date_json.substring(0, 4));
+         var day = parseInt(date_json.substring(8, 10));
+         var month = parseInt(date_json.substring(5, 7));
+         var date = new Date(year, month-1, day); //javascripts dates' months begin at 0
          console.log('inserting');
+         console.log(date_json);
          console.log(date);
          console.log(day);
          console.log(month);
