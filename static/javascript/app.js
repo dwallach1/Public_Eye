@@ -1,6 +1,5 @@
 var news_sources = [];
 
-
 $(function() {
 	$("#submit").click(function() {
 		var company = null;
@@ -18,7 +17,6 @@ $(function() {
 				var h = document.getElementById('scraping');
 				var dots = window.setInterval( function() {
 				    if(h.innerHTML.length > 13) 
-				        // h.innerHTML = "Scraping Web";
                   h.innerHTML = "Data Mining";
 				    else 
 				        h.innerHTML += ".";
@@ -26,7 +24,6 @@ $(function() {
             news_sources = JSON.stringify(news_sources)
 				$.ajax({
 		            url: '/run_query/',
-		            // data: $('form').serialize(),
 		            data: {'company': company, 
                         'news_sources': news_sources
                         },
@@ -69,7 +66,8 @@ function buildDisplayData(json, company){
    div_result.innerHTML += '<h1>We Parsed ' + json.length + ' articles pertaining to your query </h1>';
   
 
-   var sentiment = 0;
+   var polar = 0;
+   var subjectivity = 0;
    var inputs = 0;
    var j = 1;
    var div = document.createElement('div');
@@ -77,13 +75,14 @@ function buildDisplayData(json, company){
    div.id = 'data';
 
    div.innerHTML += '<h3 id="details">Data Gathered By <b>Public Eye</b>:</h2>';
+   div.innerHTML += '<canvas id="lineChart" width="740px" height="200px"></canvas>';
    div.innerHTML += '<img src = "https://chart.finance.yahoo.com/z?s='+companyUpper+'&t=1my&q=l&l=off&z=s&p=m50,m200">';
-   div.innerHTML += '<canvas id="myChart" width="80vw" height="50vh"></canvas>';
-   div.innerHTML += '<div id="chartDemoContainer"></div>';
+   // div.innerHTML += '<div id="chartDemoContainer"></div>';
+   
    markit(company, 100);
+   
    var dataPoints = [];
-   // var x_axis = [];
-   // var y_axis = [];
+
    for(i=0;i<json.length;i++) {
          
       div.innerHTML += '<h3 id="title">' + j + '. ' +json[i]['title'] + '</h2>';
@@ -97,19 +96,12 @@ function buildDisplayData(json, company){
          var day = parseInt(date_json.substring(8, 10));
          var month = parseInt(date_json.substring(5, 7));
          var date = new Date(year, month-1, day); //javascripts dates' months begin at 0
-         console.log('inserting');
-         console.log(date_json);
-         console.log(date);
-         console.log(day);
-         console.log(month);
-         console.log(year);
-         // dataPoints.push({x: date_json, y: json[i]['sentiment']});
-         dataPoints.push([date, json[i]['sentiment']]);
+         dataPoints.push([date, json[i]['polarity'], json[i]['subjectivity']]);
       }
       
-      div.innerHTML += '<h3 id="sentiment">' + '<b>' + json[i]['sentiment'] + '</b>' + '</h3>';
-      if(json[i]['sentiment'] != 0){
-         sentiment += json[i]['sentiment'];
+      div.innerHTML += '<h3 id="sentiment">' + '<b>' + json[i]['polarity'] + '</b>' + '</h3>';
+      if(json[i]['polarity'] != 0){
+         sentiment += json[i]['polarity'];
          inputs += 1;
       }
       j += 1;
@@ -131,37 +123,52 @@ function buildDisplayData(json, company){
        "padding": "14px 24px", "border": "0 none", "font-weight": "700", "letter-spacing": "1px","text-transform": "uppercase",
          "background-color": "#ffffff", "color": "#007ba7", "display":"inline-block"});
 
-
-   console.log('logging datapoints');
-   console.log(dataPoints);
-
+      
    dataPoints.sort(function(a,b){ return a[0] - b[0]; })
-   console.log('logging sorted datapoints');
-   console.log(dataPoints);
 
-   // var dp = consolidateDataPoints(dataPoints);
+   var dp = consolidateDataPoints(dataPoints);
 
-   // console.log('logging consolidated data');
-   // console.log(dp);
+   var labelsArr = [];
+   for (i=0; i < dp.length; i++){
+    labelsArr.push(String(dp[i][0]).substring(4,15));
+   }
+   var dataArr = [];
+   for (i=0; i < dp.length; i++){
+    dataArr.push(dp[i][1]);
+   }
 
-   var ctx = document.getElementById("myChart");
-   var scatterChart = new Chart(ctx, {
-       type: 'line',
-       data: {
-           datasets: [{
-               label: 'Public Sentiment',
-               data: dataPoints
-           }]
-       },
-       options: {
-           scales: {
-               xAxes: [{
-                   type: 'linear',
-                   position: 'bottom'
-               }]
-           }
-       }
-   });
+   var dataArr2 = [];
+   for (i=0; i < dp.length; i++){
+    dataArr2.push(dp[i][2]);
+   }
+
+   var sentimentData = {
+        labels : labelsArr,
+        datasets :
+         [
+            {
+              label: "Polarity",
+              data : dataArr,
+              backgroundColor: 'rgba(255, 99, 132, 0.2)',
+              borderColor: 'rgba(255,99,132,1)',
+              borderWidth: 1
+                  
+            },
+            {
+              label: "Subjectivity",
+              data : dataArr2,
+              backgroundColor: 'rgba(54, 162, 235, 0.2)',
+              borderColor: 'rgba(54, 162, 235, 1)',
+              borderWidth: 1
+                  
+            }]
+        }
+
+  var ctx = document.getElementById('lineChart').getContext('2d');
+  var myNewChart = new Chart(ctx , {
+      type: "line",
+      data: sentimentData, 
+  });
   
    $('html, body').animate({
       scrollTop: $("#results").offset().top
@@ -171,32 +178,33 @@ function buildDisplayData(json, company){
 
 function consolidateDataPoints(dp) {
    var currDate;
-   var sentiment;
+   var polarity;
+   var subjectivity;
    var entries;
    var i;
    var j;
 
    for(i=0; i < dp.length; i++){
-      sentiment = dp[i]['y'];
+      polarity = dp[i][1];
+      subjectivity = dp[i][2];
       entries = 1;
-      currDate = dp[i]['x'];
-      for(j=1; j < dp.length; j++){
-         if (dp[j]['x'] == null) { continue; }
-         if (dp[j]['x'] == currDate) {
+      console.log('in here');
+      for(j=0; j < dp.length; j++){
+         if (dp[j][0] === null || dp[i][0] === null) {  continue; }
+         if ((dp[j][0].getTime() === dp[i][0].getTime()) && (i != j)) {
             entries++;
-            sentiment += dp[j]['y'];
-            dp[j]['x'] = null;
+            polarity += dp[j][1];
+            subjectivity += dp[j][2];
+            dp[j][0] = null;
+         } else {
+          continue;
          }
       }
-      dp[i]['y'] =  sentiment /entries;  
+      dp[i][1] =  polarity / entries;  
+      dp[i][2] = subjectivity / entries;
    }
-   console.log('logging dp before removal of nulls');
-   console.log(dp);
 
-   // for (i=0; i<dp.length; i++){
-   //    if (dp[i]['x'] == null) { dp.splice(i,1); }
-   // }
-      
+   for (i=0; i<dp.length; i++){ if (dp[i][0] == null) {dp.splice(i,1); i=0;} }
    return dp;
 }
 

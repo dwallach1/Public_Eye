@@ -87,6 +87,8 @@ def get_info(links, source, company, date, depth, max_depth, rstrip):
 	global total_urls
 
 	for link in links:
+		if len(total_entries) > 2:
+			continue
 		print bcolors.BOLD + "-------------- ..... NEW LINK || TRYING LINK NUMBER : " + str(link_num) + " ..... ----------------" + bcolors.ENDC
 		link_num += 1
 		if rstrip:
@@ -255,26 +257,30 @@ def parser(html, url, company, source, date, title, max_depth):
 
 		export_html += clean_html 
 		
-	sentiment = get_score_LM(export_html)["Polarity"]
+	sentiment = get_score_LM(export_html)
+	polarity = sentiment["Polarity"]
+	subjectivity = sentiment["Subjectivity"]
+	negative = sentiment["Negative"]
+	positive = sentiment["Positive"]
 
 	if sentiment == 0:
 		traverseFurther = True
 
 	if sentiment != 0:
-		total_sentiment.append(sentiment)
+		total_sentiment.append(polarity)
 		total_entries.append(1)
 
 	tlock.acquire()
 	print "--------------**********-------------------"
-	print bcolors.OKBLUE + "Score is : " + str(sentiment) +  " for url: " + url +bcolors.ENDC
+	print bcolors.OKBLUE + "Score is : " + str(polarity) +  " for url: " + url +bcolors.ENDC
 	# print export_html
 	print "--------------**********-------------------"
 	tlock.release()
-	export_JSON_web(company, url, source, date, sentiment, title, export_html)
+	export_JSON_web(company, url, source, date, polarity, subjectivity, negative, positive, title, export_html)
 	
 	return traverseFurther
 
-def export_JSON_web(company, url, source, date, sentiment, title, article_data):
+def export_JSON_web(company, url, source, date, polarity, subjectivity, negative, positive, title, article_data):
 	global data_glob
 	data = {
 		"title" : title,
@@ -282,9 +288,11 @@ def export_JSON_web(company, url, source, date, sentiment, title, article_data):
 		"source" : source,
 		"date" : date,
 		"url" : url,
-		# "sublinks" : sublinks,
 		"article_data": article_data,
-		"sentiment": sentiment
+		"polarity": polarity,
+		"subjectivity": subjectivity,
+		"negative": negative,
+		"positive": positive
 	}
 
 	data_glob.append(data)

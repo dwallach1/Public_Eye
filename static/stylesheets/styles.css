@@ -5,7 +5,8 @@ form {
 	padding-top: 20px;
 	text-align: center;
 }
-
+#lineChart { background-color : #eee;
+}
 .navbar-header>img {
 	width: 40px;
 	height: 40px;
