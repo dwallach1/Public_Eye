@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/bootstrap.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/resultTable.css') }}">
 </head>
 	<nav class="navbar navbar-default" id="nav">
           <div class="container nav-container">
@@ -28,8 +29,6 @@
           </div>
         </nav>
     <body>
-
-
     	
     	<div id="eye">
     		<img src="{{ url_for('static', filename='img/the_eye.png') }}">
@@ -228,6 +227,25 @@
  			<h2 id="ticker">It appears there was an error with the ticker you enetered. Please try Again</h2>
  			<button type="button" class="btn btn-info btn-lg">Try New Query</button>
  		</div>
+
+
+  <div id="resultTable" class="table-responsive-vertical shadow-z-1">
+  <!-- Table starts here -->
+  <table id="table" class="table table-hover table-mc-light-blue">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Link</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+      </tbody>
+    </table>
+  </div>
+
+
 
 	 	
 

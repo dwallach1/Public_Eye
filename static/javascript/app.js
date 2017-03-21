@@ -60,56 +60,61 @@ function buildDisplayData(json, company){
    var companyUpper = company.toUpperCase();
 
    var div_result = document.createElement('div');
-   document.body.insertBefore(div_result, document.getElementById("footer"));
+   document.body.insertBefore(div_result, document.getElementById("resultTable"));
    div_result.id = 'results';
    div_result.innerHTML += '<h1>Here are the results for '+ json[0]['company'] +'</h1>';
    div_result.innerHTML += '<h1>We Parsed ' + json.length + ' articles pertaining to your query </h1>';
   
 
-   var polar = 0;
+   var polarity = 0;
    var subjectivity = 0;
    var inputs = 0;
    var j = 1;
    var div = document.createElement('div');
-   document.body.insertBefore(div, document.getElementById("footer"));
+   document.body.insertBefore(div, document.getElementById("resultTable"));
    div.id = 'data';
 
    div.innerHTML += '<h3 id="details">Data Gathered By <b>Public Eye</b>:</h2>';
    div.innerHTML += '<canvas id="lineChart" width="740px" height="200px"></canvas>';
-   div.innerHTML += '<img src = "https://chart.finance.yahoo.com/z?s='+companyUpper+'&t=1my&q=l&l=off&z=s&p=m50,m200">';
-   // div.innerHTML += '<div id="chartDemoContainer"></div>';
-   
-   markit(company, 100);
-   
-   var dataPoints = [];
 
-   for(i=0;i<json.length;i++) {
-         
-      div.innerHTML += '<h3 id="title">' + j + '. ' +json[i]['title'] + '</h2>';
-      div.innerHTML += '<p>' + json[i]['source'] + '</p>';
-      div.innerHTML += '<p>' + json[i]['date'] + '</p>';
-      div.innerHTML += '<p>' + json[i]['url'] + '</p>';
+   var table = document.getElementById('table');
+   var t = document.getElementById('resultTable');
+   var tBody = document.getElementById('tbody');
 
-      if(json[i]['date'] != "NULL") {
-         var date_json = json[i]['date'];
-         var year = parseInt(date_json.substring(0, 4));
-         var day = parseInt(date_json.substring(8, 10));
-         var month = parseInt(date_json.substring(5, 7));
-         var date = new Date(year, month-1, day); //javascripts dates' months begin at 0
-         dataPoints.push([date, json[i]['polarity'], json[i]['subjectivity']]);
-      }
       
-      div.innerHTML += '<h3 id="sentiment">' + '<b>' + json[i]['polarity'] + '</b>' + '</h3>';
-      if(json[i]['polarity'] != 0){
-         sentiment += json[i]['polarity'];
-         inputs += 1;
-      }
-      j += 1;
+   var dataPoints = [];
+   for(i=0;i<json.length;i++) {
 
-      $("#data").css({"padding-top": "20px", "width": "100vw", "display": "none", "text-align": "center"});
-      $("#sentiment").css({"color": "#007ba7"});
-   }
-   var avg_sentiment = sentiment /inputs;
+    var row = table.insertRow(i+1);
+    // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+    var cell1 = row.insertCell(0);
+    var cell2 = row.insertCell(1);
+    var cell3 = row.insertCell(2);
+    var cell4 = row.insertCell(3);
+    cell1.innerHTML =  json[i]['title'];
+    cell2.innerHTML =  json[i]['polarity'];
+    cell3.innerHTML =  '<a href="' + json[i]['url'] + '" target="_blank">Source</a>';
+    cell2.innerHTML =  json[i]['date'];
+
+    if(json[i]['date'] != "NULL") {
+       var date_json = json[i]['date'];
+       var year = parseInt(date_json.substring(0, 4));
+       var day = parseInt(date_json.substring(8, 10));
+       var month = parseInt(date_json.substring(5, 7));
+       var date = new Date(year, month-1, day); //javascripts dates' months begin at 0
+       dataPoints.push([date, json[i]['polarity'], json[i]['subjectivity']]);
+    }
+        
+    if(json[i]['polarity'] != 0){
+       polarity += json[i]['polarity'];
+       inputs += 1;
+    }
+    j += 1;
+  }
+
+  t.style.display = 'block';
+
+  var avg_sentiment = polarity /inputs;
 
    div_result.innerHTML += '<h1> We Found the average Sentiment to be: '+ avg_sentiment +'</h1>';
    div_result.innerHTML += '<a class="page-scroll btn btn-default btn-xl sr-button" id="showDataBtn" onclick="showData();">Analyze Data</a>';
@@ -123,7 +128,6 @@ function buildDisplayData(json, company){
        "padding": "14px 24px", "border": "0 none", "font-weight": "700", "letter-spacing": "1px","text-transform": "uppercase",
          "background-color": "#ffffff", "color": "#007ba7", "display":"inline-block"});
 
-      
    dataPoints.sort(function(a,b){ return a[0] - b[0]; })
 
    var dp = consolidateDataPoints(dataPoints);
@@ -208,185 +212,6 @@ function consolidateDataPoints(dp) {
    return dp;
 }
 
-function markit(symbol, duration) {
-   /** 
-    * Version 2.0
-    */
-   var Markit = {};
-   /**
-    * Define the InteractiveChartApi.
-    * First argument is symbol (string) for the quote. Examples: AAPL, MSFT, JNJ, GOOG.
-    * Second argument is duration (int) for how many days of history to retrieve.
-    */
-   Markit.InteractiveChartApi = function(symbol,duration){
-       this.symbol = symbol.toUpperCase();
-       this.duration = duration;
-       this.PlotChart();
-   };
-
-   Markit.InteractiveChartApi.prototype.PlotChart = function(){
-       
-       var params = {
-           parameters: JSON.stringify( this.getInputParams() )
-       }
-
-       //Make JSON request for timeseries data
-       $.ajax({
-           beforeSend:function(){
-               $("#chartDemoContainer").text("Loading chart...");
-           },
-           data: params,
-           url: "http://dev.markitondemand.com/Api/v2/InteractiveChart/jsonp",
-           dataType: "jsonp",
-           context: this,
-           success: function(json){
-               //Catch errors
-               if (!json || json.Message){
-                   console.error("Error: ", json.Message);
-                   return;
-               }
-               this.render(json);
-           },
-           error: function(response,txtStatus){
-               console.log(response,txtStatus)
-           }
-       });
-   };
-
-   Markit.InteractiveChartApi.prototype.getInputParams = function(){
-       return {  
-           Normalized: false,
-           NumberOfDays: this.duration,
-           DataPeriod: "Day",
-           Elements: [
-               {
-                   Symbol: this.symbol,
-                   Type: "price",
-                   Params: ["ohlc"] //ohlc, c = close only
-               },
-               {
-                   Symbol: this.symbol,
-                   Type: "volume"
-               }
-           ]
-           //,LabelPeriod: 'Week',
-           //LabelInterval: 1
-       }
-   };
-
-   Markit.InteractiveChartApi.prototype._fixDate = function(dateIn) {
-       var dat = new Date(dateIn);
-       return Date.UTC(dat.getFullYear(), dat.getMonth(), dat.getDate());
-   };
-
-   Markit.InteractiveChartApi.prototype._getOHLC = function(json) {
-       var dates = json.Dates || [];
-       var elements = json.Elements || [];
-       var chartSeries = [];
-
-       if (elements[0]){
-
-           for (var i = 0, datLen = dates.length; i < datLen; i++) {
-               var dat = this._fixDate( dates[i] );
-               var pointData = [
-                   dat,
-                   elements[0].DataSeries['open'].values[i],
-                   elements[0].DataSeries['high'].values[i],
-                   elements[0].DataSeries['low'].values[i],
-                   elements[0].DataSeries['close'].values[i]
-               ];
-               chartSeries.push( pointData );
-           };
-       }
-       return chartSeries;
-   };
-
-   Markit.InteractiveChartApi.prototype._getVolume = function(json) {
-       var dates = json.Dates || [];
-       var elements = json.Elements || [];
-       var chartSeries = [];
-
-       if (elements[1]){
-
-           for (var i = 0, datLen = dates.length; i < datLen; i++) {
-               var dat = this._fixDate( dates[i] );
-               var pointData = [
-                   dat,
-                   elements[1].DataSeries['volume'].values[i]
-               ];
-               chartSeries.push( pointData );
-           };
-       }
-       return chartSeries;
-   };
-
-   Markit.InteractiveChartApi.prototype.render = function(data) {
-       //console.log(data)
-       // split the data set into ohlc and volume
-       var ohlc = this._getOHLC(data),
-           volume = this._getVolume(data);
-
-       // set the allowed units for data grouping
-       var groupingUnits = [[
-           'week',                         // unit name
-           [1]                             // allowed multiples
-       ], [
-           'month',
-           [1, 2, 3, 4, 6]
-       ]];
-
-       // create the chart
-       $('#chartDemoContainer').highcharts('StockChart', {
-           
-           rangeSelector: {
-               selected: 1
-               //enabled: false
-           },
-
-           title: {
-               text: this.symbol + ' Historical Price'
-           },
-
-           yAxis: [{
-               title: {
-                   text: 'OHLC'
-               },
-               height: 200,
-               lineWidth: 2
-           }, {
-               title: {
-                   text: 'Volume'
-               },
-               top: 300,
-               height: 100,
-               offset: 0,
-               lineWidth: 2
-           }],
-           
-           series: [{
-               type: 'candlestick',
-               name: this.symbol,
-               data: ohlc,
-               dataGrouping: {
-                   units: groupingUnits
-               }
-           }, {
-               type: 'column',
-               name: 'Volume',
-               data: volume,
-               yAxis: 1,
-               dataGrouping: {
-                   units: groupingUnits
-               }
-           }],
-           credits: {
-               enabled:false
-           }
-       });
-   };
-}
-
-
 
 function showData() {
    console.log("in show data func");
@@ -404,7 +229,6 @@ function newQuery() {
                scrollTop: $("#eye").offset().top
                }, 1000);
 }
-
 
 function showSearchBackground() {
    	var e = document.getElementById('particles');
@@ -426,10 +250,10 @@ function hideAlert() {
 	e.style.display = 'none'
 }
 
+
 $('div.navbar-header').click(function(){
     console.log("reload page");
     window.location.reload(false); 
-
 });
 
 
