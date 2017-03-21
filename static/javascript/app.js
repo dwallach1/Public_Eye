@@ -94,7 +94,7 @@ function buildDisplayData(json, company){
     cell1.innerHTML =  json[i]['title'];
     cell2.innerHTML =  json[i]['polarity'];
     cell3.innerHTML =  '<a href="' + json[i]['url'] + '" target="_blank">Source</a>';
-    cell2.innerHTML =  json[i]['date'];
+    cell4.innerHTML =  json[i]['date'];
 
     if(json[i]['date'] != "NULL") {
        var date_json = json[i]['date'];

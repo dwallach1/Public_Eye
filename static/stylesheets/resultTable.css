@@ -35,7 +35,6 @@ body {
 }
 #resultTable {
   display: none;
-  /*padding-top: 20px;*/
 }
 #demo {
   margin: 20px auto;
@@ -67,6 +66,7 @@ body {
 
 
 .table {
+  margin-top: 20px;
   width: 100%;
   max-width: 100%;
   margin-bottom: 2rem;
