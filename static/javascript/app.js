@@ -64,7 +64,8 @@ function buildDisplayData(json, company){
    var data_div = document.getElementById('data');
    var investing_div = document.getElementById('investing');
 
-   investing_div.innerHTML += "Placeholder";
+   investing_div.innerHTML += "<h1>Investing Advice</h1>";
+   investing_div.innerHTML += "<h1>We are bullish</h1>";
 
    data_div.innerHTML += '<h1>Results for '+ json[0]['company'] +'</h1>';
    data_div.innerHTML += '<h1>We Parsed ' + json.length + ' articles pertaining to your query </h1>';
@@ -103,22 +104,23 @@ function buildDisplayData(json, company){
     j += 1;
   }
 
-  var avg_sentiment = polarity / inputs;
+  var avg_sentiment = round((polarity / inputs), 4);
 
-   
+
   data_div.innerHTML += '<h1> We Found the average Sentiment to be: <h1>';
-  data_div.innerHTML += '<h1>' + avg_sentiment +'</h1>';
-
-  showData();
+  data_div.innerHTML += '<h1><span id="sentimentScore"><b>' + avg_sentiment +'</b></span></h1>';
 
   dataPoints.sort(function(a,b){ return a[0] - b[0]; })
   buildSentimentGraph(dataPoints);
+  buildRadarChart();
 
   $('html, body').animate({
     scrollTop: $("#data").offset().top
     }, 1000);
 
+  hideHomePage();
   hideSearchBackground(); 
+  showData();
 }
 
 function consolidateDataPoints(dp) {
@@ -200,18 +202,65 @@ function buildSentimentGraph(dataPoints) {
   });
 }
 
+function buildRadarChart(){
+  var data = {
+    labels: ["2/1/17", "2/23/17", "3/4/17", "3/6/17", "3/9/17", "3/10/17", "3/15/17"],
+    datasets: [
+        {
+            label: "Sentiment",
+            backgroundColor: "rgba(255, 193, 7, 0.2)",
+            borderColor: "rgba(255, 193, 7, 1)",
+            pointBackgroundColor: "rgba(255, 193, 7, 1)",
+            pointBorderColor: "#fff",
+            pointHoverBackgroundColor: "#fff",
+            pointHoverBorderColor: "rgba(255, 193, 7, 1)",
+            data: [.50343, -.0012123, -.76523, .1231, -.1232, -.6432, -.00234]
+        },
+        {
+            label: "Stock Price Day Change",
+            backgroundColor: "rgba(0, 200, 83, 0.2)",
+            borderColor: "rgba(0, 200, 83, 1)",
+            pointBackgroundColor: "rgba(0, 200, 83, 1)",
+            pointBorderColor: "#fff",
+            pointHoverBackgroundColor: "#fff",
+            pointHoverBorderColor: "rgba(0, 200, 83, 1)",
+            data: [2.01, .56, -3.1, -.34, 1.04, .23, -1.76]
+        }
+     ]
+  };
+  var ctx = document.getElementById('radarChart').getContext('2d');
+  var myRadarChart = new Chart(ctx, {
+    type: 'radar',
+    data: data,
+    // options: options
+  });
+
+}
+
 function showData() {
    $("#data").css({"display": "inline-block"});
    $("#investing").css({"display": "inline-block"});
    $("#resultTable").css({"display": "block"});
-   $("#lineChartContainer").css({"display": "block"});
+   $("#lineChartContainer").css({"display": "inline-block"});
+   $("#radarChartContainer").css({"display": "inline-block"});
+   $("#resultButtons").css({"display": "block"});
    $('html, body').animate({
                scrollTop: $("#data").offset().top
                }, 1000);
 }
 
-function hideHomePage() {
+function round(value, decimals) {
+  return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+}
 
+function hideHomePage() {
+  var homePage = document.getElementById('HomeContainer');
+  homePage.style.display = 'none';
+}
+
+function showHomePage() {
+  var homePage = document.getElementById('HomeContainer');
+  homePage.style.display = 'block';
 }
 
 function newQuery() {

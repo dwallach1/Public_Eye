@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/bootstrap.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/styles.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/resultTable.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/results.css') }}">
 </head>
 	<nav class="navbar navbar-default" id="nav">
           <div class="container nav-container">
@@ -231,10 +231,15 @@
  	  <div id="data" > </div>
  	  <div id="investing"> </div>
  	 <!-- </div> -->
-
+ 	 <div style="height=200px; display: flex;">
  	  <div id="lineChartContainer">
- 	  	<canvas id="lineChart" ></canvas>
+ 	  	<canvas id="lineChart"></canvas>
  	  </div>
+
+ 	   <div id="radarChartContainer">
+ 	  	<canvas id="radarChart" ></canvas>
+ 	  </div>
+ 	</div>
 
 	  <div id="resultTable" class="table-responsive-vertical shadow-z-1">
 	  <!-- Table starts here -->
@@ -250,6 +255,13 @@
 	      <tbody id="tbody">
 	      </tbody>
 	    </table>
+	  </div>
+
+	  <div id="resultButtons">
+	  	<hr>
+	  	<button id="newQueryBtn" style="display=inline-block;">New Query</button>
+	  	<button id="exportBtn" style="display=inline-block;">Export Analysis</button>
+	  	<button id="shareBtn" style="display=inline-block;">Share Results</button>
 	  </div>
 
 	<section id="footer" class="section footer">

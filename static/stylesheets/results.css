@@ -1,4 +1,5 @@
 @import "https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic&subset=latin,cyrillic"; 
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:700);
 
 *:before,
 *:after
@@ -30,6 +31,7 @@ body {
 
 #resultTable,
 #lineChartContainer,
+#radarChartContainer,
 #nav,
 #data {
   position: relative;
@@ -41,71 +43,128 @@ body {
 #resultTable, 
 #data, 
 #investing, 
-#lineChartContainer {
+#lineChartContainer,
+#radarChartContainer,
+#resultButtons {
   display: none;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.24);
 }
 
 #lineChartContainer {
   /*height: 250px;*/
-  /*width: 100%;*/
+  background-color: #FFE082;
+  width: 65%;
   /*max-width: 100%;*/
   /*width: 500px;*/
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.24);
 }
 
 #lineChart
 {
-  background-color: #ffffff;
+  background-color: #FFE082;
   width: 100%;
   max-width: 100%;
   height: 100%;
+  margin-top: 20px;
+  /*margin-bottom: 15px;*/
+  /*margin-left: 25px;*/
+}
 
+#radarChartContainer {
+  margin-left: 15px;
+  width: 35%;
+  background-color: #B0BEC5;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.24);
+}
+
+#radarChart
+{
+  background-color: #B0BEC5;
+  width: 100%;
+  max-width: 100%;
+  height: 75%;
+  /*margin-left: 25px;*/
+}
+
+
+#resultButtons {
+  text-align: center;
+  margin: 16px;
+  position: relative;
 }
 
 
 #data {
-  background-color: #ffcc00;
+  background-color: #4DB6AC;
   color: white;
   text-align: center;
-  width: 45%; 
+  width: 50%; 
   vertical-align: top;
   font-size: 1.7rem;
   line-height: 1rem;
-  height: 150px;
+  height: 250px;
   margin-top: 20px;
-  margin-left: 20px;
-  /*margin: 20px auto;
-  max-width: 960px;*/
 }
 
 #investing {
-  background-color: #666666;
+  background-color: #66BB6A;
   margin-top: 20px;
-  margin-left: 60px;
+  margin-left: 10px;
   width: 45%; 
   vertical-align: top;
   color: white;
   text-align: center;
   font-size: 1.7rem;
   line-height: 1rem;
-  height: 150px;
+  height: 250px;
 }
 
 #resultTable {
-  height: 300px;
+  /*height: 300px;*/
 }
 
-#data h1 {
+#data h1, #investing h1 {
+  padding-top: 10px;
   font-size: 2.4rem;
   line-height: 1.2rem;
   letter-spacing: 0;
   font-weight: 500;
   color: white;
-  /*text-transform: inherit;*/
-  /*margin: 16px;*/
-  /*margin-bottom: 1rem;*/
   text-align: center;
+  vertical-align: middle;
 }
 
+button {
+  position:relative;
+  margin-top:10%;
+  background: #007ba7;
+  border:1px solid white;
+  padding:20px;
+  font-size:0.9em;
+  color:white;
+  box-shadow:4px 4px 0px 0px white;
+  font-family: 'Open Sans', sans-serif;
+  font-weight:700;
+  letter-spacing:5px;
+  text-transform:uppercase;
+  padding-right: 15px;
+  
+}
+
+button:hover {
+  left:4px;
+  top:4px;
+  box-shadow:none;
+  transition: all .4s ease-in-out;
+  -moz-transition: all .4s ease-in-out;
+  -webkit-transition: all .4s ease-in-out;
+}
+
+
+#sentimentScore {
+  padding: 2px;
+  outline: 2px solid white;
+}
 
 .shadow-z-1 {
   -webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.24);
