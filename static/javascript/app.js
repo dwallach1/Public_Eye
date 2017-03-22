@@ -56,35 +56,26 @@ $(function() {
 
 
 function buildDisplayData(json, company){
-   var company = document.getElementById('search').value;
-   var companyUpper = company.toUpperCase();
-
-   var div_result = document.createElement('div');
-   document.body.insertBefore(div_result, document.getElementById("resultTable"));
-   div_result.id = 'results';
-   div_result.innerHTML += '<h1>Here are the results for '+ json[0]['company'] +'</h1>';
-   div_result.innerHTML += '<h1>We Parsed ' + json.length + ' articles pertaining to your query </h1>';
   
-
    var polarity = 0;
    var subjectivity = 0;
    var inputs = 0;
    var j = 1;
-   var div = document.createElement('div');
-   document.body.insertBefore(div, document.getElementById("resultTable"));
-   div.id = 'data';
+   var data_div = document.getElementById('data');
+   var investing_div = document.getElementById('investing');
 
-   div.innerHTML += '<h3 id="details">Data Gathered By <b>Public Eye</b>:</h2>';
-   div.innerHTML += '<canvas id="lineChart" width="740px" height="200px"></canvas>';
+   investing_div.innerHTML += "Placeholder";
 
+   data_div.innerHTML += '<h1>Results for '+ json[0]['company'] +'</h1>';
+   data_div.innerHTML += '<h1>We Parsed ' + json.length + ' articles pertaining to your query </h1>';
+   
    var table = document.getElementById('table');
    var t = document.getElementById('resultTable');
    var tBody = document.getElementById('tbody');
-
-      
+  
    var dataPoints = [];
+   
    for(i=0;i<json.length;i++) {
-
     var row = table.insertRow(i+1);
     // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
     var cell1 = row.insertCell(0);
@@ -112,72 +103,22 @@ function buildDisplayData(json, company){
     j += 1;
   }
 
-  t.style.display = 'block';
+  var avg_sentiment = polarity / inputs;
 
-  var avg_sentiment = polarity /inputs;
+   
+  data_div.innerHTML += '<h1> We Found the average Sentiment to be: <h1>';
+  data_div.innerHTML += '<h1>' + avg_sentiment +'</h1>';
 
-   div_result.innerHTML += '<h1> We Found the average Sentiment to be: '+ avg_sentiment +'</h1>';
-   div_result.innerHTML += '<a class="page-scroll btn btn-default btn-xl sr-button" id="showDataBtn" onclick="showData();">Analyze Data</a>';
-   div_result.innerHTML += '<a class="page-scroll btn btn-default btn-xl sr-button" id="newQueryBtn" onclick="newQuery();">Run New Query</a>';
-   $("#results h1").css({"color": "#fff", "text-align": "center"});
-   $("#results").css({"padding-top": "150px", "width": "100vw", "height": "100vh", "background-color": "#007ba7"});
-   $("#showDataBtn").css({"text-align": "center", "margin-top": "50px", "margin-left":"550px", "btn-xl.round": "24px", 
-          "padding": "14px 24px", "border": "0 none", "font-weight": "700", "letter-spacing": "1px","text-transform": "uppercase",
-            "background-color": "#ffcc00", "color": "#007ba7", "display":"inline-block"});
-   $("#newQueryBtn").css({"text-align": "center", "margin-top": "20px", "margin-left":"540px", "btn-xl.round": "24px", 
-       "padding": "14px 24px", "border": "0 none", "font-weight": "700", "letter-spacing": "1px","text-transform": "uppercase",
-         "background-color": "#ffffff", "color": "#007ba7", "display":"inline-block"});
+  showData();
 
-   dataPoints.sort(function(a,b){ return a[0] - b[0]; })
+  dataPoints.sort(function(a,b){ return a[0] - b[0]; })
+  buildSentimentGraph(dataPoints);
 
-   var dp = consolidateDataPoints(dataPoints);
+  $('html, body').animate({
+    scrollTop: $("#data").offset().top
+    }, 1000);
 
-   var labelsArr = [];
-   for (i=0; i < dp.length; i++){
-    labelsArr.push(String(dp[i][0]).substring(4,15));
-   }
-   var dataArr = [];
-   for (i=0; i < dp.length; i++){
-    dataArr.push(dp[i][1]);
-   }
-
-   var dataArr2 = [];
-   for (i=0; i < dp.length; i++){
-    dataArr2.push(dp[i][2]);
-   }
-
-   var sentimentData = {
-        labels : labelsArr,
-        datasets :
-         [
-            {
-              label: "Polarity",
-              data : dataArr,
-              backgroundColor: 'rgba(255, 99, 132, 0.2)',
-              borderColor: 'rgba(255,99,132,1)',
-              borderWidth: 1
-                  
-            },
-            {
-              label: "Subjectivity",
-              data : dataArr2,
-              backgroundColor: 'rgba(54, 162, 235, 0.2)',
-              borderColor: 'rgba(54, 162, 235, 1)',
-              borderWidth: 1
-                  
-            }]
-        }
-
-  var ctx = document.getElementById('lineChart').getContext('2d');
-  var myNewChart = new Chart(ctx , {
-      type: "line",
-      data: sentimentData, 
-  });
-  
-   $('html, body').animate({
-      scrollTop: $("#results").offset().top
-      }, 1000);
-   hideSearchBackground() 
+  hideSearchBackground(); 
 }
 
 function consolidateDataPoints(dp) {
@@ -212,13 +153,65 @@ function consolidateDataPoints(dp) {
    return dp;
 }
 
+function buildSentimentGraph(dataPoints) {
+  var dp = consolidateDataPoints(dataPoints);
+
+  var labelsArr = [];
+  for (i=0; i < dp.length; i++){
+    labelsArr.push(String(dp[i][0]).substring(4,15));
+    // labelsArr.push(String(dp[i][0]).substring(4,10));
+  }
+  var dataArr = [];
+  for (i=0; i < dp.length; i++){
+    dataArr.push(dp[i][1]);
+  }
+
+  var dataArr2 = [];
+  for (i=0; i < dp.length; i++){
+    dataArr2.push(dp[i][2]);
+  }
+
+  var sentimentData = {
+        labels : labelsArr,
+        datasets :
+         [
+            {
+              label: "Polarity",
+              data : dataArr,
+              backgroundColor: 'rgba(255, 99, 132, 0.2)',
+              borderColor: 'rgba(255,99,132,1)',
+              borderWidth: 1
+                  
+            },
+            {
+              label: "Subjectivity",
+              data : dataArr2,
+              backgroundColor: 'rgba(54, 162, 235, 0.2)',
+              borderColor: 'rgba(54, 162, 235, 1)',
+              borderWidth: 1
+                  
+            }]
+        }
+
+  var ctx = document.getElementById('lineChart').getContext('2d');
+  var myNewChart = new Chart(ctx , {
+      type: "line",
+      data: sentimentData, 
+  });
+}
 
 function showData() {
-   console.log("in show data func");
-   $("#data").css({"display": "block"});
+   $("#data").css({"display": "inline-block"});
+   $("#investing").css({"display": "inline-block"});
+   $("#resultTable").css({"display": "block"});
+   $("#lineChartContainer").css({"display": "block"});
    $('html, body').animate({
                scrollTop: $("#data").offset().top
                }, 1000);
+}
+
+function hideHomePage() {
+
 }
 
 function newQuery() {
@@ -276,7 +269,9 @@ $(document).ready(function() {
   });
 });
 
-
+// 
+// 
+// 
 /** FOR BUTTON CLICKING PROCESSING ***/
 $(function() {
    $("#marketWatch").click(function(e) {

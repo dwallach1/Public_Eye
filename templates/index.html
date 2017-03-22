@@ -4,10 +4,7 @@
   <meta charset="utf-8">
   <title>Public Eye</title>
   <script src="{{ url_for('static', filename='javascript/jquery-3.1.1.min.js') }}"></script>
-  <!-- // <script type="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.js"></script> -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script> 
- <!-- <script src="{{ url_for('static', filename='javascript/Chart.Core.js') }}"></script>
-  <script src="{{ url_for('static', filename='javascript/Chart.Scatter.js') }}"></script> -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/bootstrap.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/styles.css') }}">
@@ -29,195 +26,197 @@
           </div>
         </nav>
     <body>
-    	
-    	<div id="eye">
-    		<img src="{{ url_for('static', filename='img/the_eye.png') }}">
-    	</div>
-    	<form action="/run_query" method="POST" role="form">
-    		<input type="text" placeholder="Enter a Company's Ticker..." maxLength="20" id="search">
-    		<input href="#particlesSection" value="GO" id="submit">
-    	</form>
-    	<br>
-    	</div>
-   		 <div class="alert alert-danger fade in" role="alert" id="newsAlert">
-   		 	<a onclick="hideAlert();" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-		  <strong>Oh snap, an error occured!</strong> Please select 1 or more news sources to query and make sure you have entered a company. Then try submitting again.
-		</div>
-    	<div id="newsSources">
-    	<h2 id="newsHeader">News Sources to Query</h2>
-	   	<div class="container" id="newsCheckList">
-		    <div class="row">
-		        <div class="form-group">
-		            <div class="searchable-container">
-		                <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
-		                    <div class="info-block block-info clearfix">
-		                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
-		                            <label class="btn btn-default" id="marketWatchBtn">
-		                                <div class="bizcontent">
-		                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" class="newsSource" id="marketWatch">
-		                                    <span class="glyphicon glyphicon-ok glyphicon-lg"></span>
-
-		                                    <img src="{{ url_for('static', filename='img/marketWatch.png') }}">
-		                                </div>
-		                            </label>
-		                        </div>
-		                    </div>
-		                </div>
-		                <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
-		                    <div class="info-block block-info clearfix">
-		                        <div class="square-box pull-left">
-		                        </div>
-		                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
-		                            <label class="btn btn-default" id="seekingAlphaBtn">
-		                                <div class="bizcontent">
-		                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" id="seekingAlpha">
-		                                    <span class="glyphicon glyphicon-ok glyphicon-lg" ></span>
-		                                    <img src="{{ url_for('static', filename='img/seekingAlpha.jpg') }}">
-		                                </div>
-		                            </label>
-		                        </div>
-		                    </div>
-		                </div>
-		                <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
-		                    <div class="info-block block-info clearfix">
-		  		                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
-		                            <label class="btn btn-default" id="bloombergBusinessBtn">
-		                                <div class="bizcontent">
-		                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" id="bloombergBusiness">
-		                                    <span class="glyphicon glyphicon-ok glyphicon-lg"></span>
-		                                    <img src="{{ url_for('static', filename='img/BloombergBusiness.jpg') }}">
-		                                </div>
-		                            </label>
-		                        </div>
-		                    </div>
-		                </div>
-		              <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
-		                    <div class="info-block block-info clearfix">
-		  		                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
-		                            <label class="btn btn-default" id="yahooFinanceBtn">
-		                                <div class="bizcontent">
-		                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" id="yahooFinance">
-		                                    <span class="glyphicon glyphicon-ok glyphicon-lg"></span>
-		                                    <img src="{{ url_for('static', filename='img/yahooFinance.jpg') }}">
-		                                </div>
-		                            </label>
-		                        </div>
-		                    </div>
-		                </div>
-		                 <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
-		                    <div class="info-block block-info clearfix">
-		                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
-		                            <label class="btn btn-default" id="motleyFoolBtn">
-		                                <div class="bizcontent">
-		                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" class="newsSource" id="motleyFool">
-		                                    <span class="glyphicon glyphicon-ok glyphicon-lg"></span>
-		                                    <img src="{{ url_for('static', filename='img/motleyFool.png') }}">
-		                                </div>
-		                            </label>
-		                        </div>
-		                    </div>
-		                </div>
-		                <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
-		                    <div class="info-block block-info clearfix">
-		                        <div class="square-box pull-left">
-		                        </div>
-		                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
-		                            <label class="btn btn-default" id="reutersBtn">
-		                                <div class="bizcontent">
-		                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" id="reuters">
-		                                    <span class="glyphicon glyphicon-ok glyphicon-lg" ></span>
-		                                    <img src="{{ url_for('static', filename='img/reuters.jpg') }}">
-		                                </div>
-		                            </label>
-		                        </div>
-		                    </div>
-		                </div>
-		                <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
-		                    <div class="info-block block-info clearfix">
-		  		                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
-		                            <label class="btn btn-default" id="WSJBtn">
-		                                <div class="bizcontent">
-		                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" id="WSJ">
-		                                    <span class="glyphicon glyphicon-ok glyphicon-lg"></span>
-		                                    <img src="{{ url_for('static', filename='img/WSJ.jpg') }}">
-		                                </div>
-		                            </label>
-		                        </div>
-		                    </div>
-		                </div>
-		              <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
-		                    <div class="info-block block-info clearfix">
-		  		                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
-		                            <label class="btn btn-default" id="financialTimesBtn">
-		                                <div class="bizcontent">
-		                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" id="financialTimes">
-		                                    <span class="glyphicon glyphicon-ok glyphicon-lg"></span>
-		                                    <img src="{{ url_for('static', filename='img/financialTimes.jpg') }}">
-		                                </div>
-		                            </label>
-			                        </div>
-			                    </div>
-			                </div>
-			                         <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
-		                    <div class="info-block block-info clearfix">
-		                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
-		                            <label class="btn btn-default" id="CNBCBtn">
-		                                <div class="bizcontent">
-		                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" class="newsSource" id="CNBC">
-		                                    <span class="glyphicon glyphicon-ok glyphicon-lg"></span>
-		                                    <img src="{{ url_for('static', filename='img/CNBC.gif') }}">
-		                                </div>
-		                            </label>
-		                        </div>
-		                    </div>
-		                </div>
-		                <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
-		                    <div class="info-block block-info clearfix">
-		                        <div class="square-box pull-left">
-		                        </div>
-		                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
-		                            <label class="btn btn-default" id="IBTimesBtn">
-		                                <div class="bizcontent">
-		                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" id="IBTimes">
-		                                    <span class="glyphicon glyphicon-ok glyphicon-lg" ></span>
-		                                    <img src="{{ url_for('static', filename='img/IBTimes.png') }}">
-		                                </div>
-		                            </label>
-		                        </div>
-		                    </div>
-		                </div>
-		                <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
-		                    <div class="info-block block-info clearfix">
-		  		                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
-		                            <label class="btn btn-default" id="googleFinanceBtn">
-		                                <div class="bizcontent">
-		                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" id="googleFinance">
-		                                    <span class="glyphicon glyphicon-ok glyphicon-lg"></span>
-		                                    <img src="{{ url_for('static', filename='img/googleFinance.png') }}">
-		                                </div>
-		                            </label>
-		                        </div>
-		                    </div>
-		                </div>
-		              <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
-		                    <div class="info-block block-info clearfix">
-		  		                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
-		                            <label class="btn btn-default" id="businessInsiderBtn">
-		                                <div class="bizcontent">
-		                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" id="businessInsider">
-		                                    <span class="glyphicon glyphicon-ok glyphicon-lg"></span>
-		                                    <img src="{{ url_for('static', filename='img/businessInsider.png') }}">
-		                                </div>
-		                            </label>
-			                        </div>
-			                    </div>
-			                </div>
-			            </div>
-			        </div>
-				</div>
+    	<div id="HomeContainer">	
+	    	<div id="eye">
+	    		<img src="{{ url_for('static', filename='img/the_eye.png') }}">
+	    	</div>
+	    	<form action="/run_query" method="POST" role="form">
+	    		<input type="text" placeholder="Enter a Company's Ticker..." maxLength="20" id="search">
+	    		<input href="#particlesSection" value="GO" id="submit">
+	    	</form>
+	    	<br>
+	    	<!-- </div> -->
+	   		 <div class="alert alert-danger fade in" role="alert" id="newsAlert">
+	   		 	<a onclick="hideAlert();" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+			  <strong>Oh snap, an error occured!</strong> Please select 1 or more news sources to query and make sure you have entered a company. Then try submitting again.
 			</div>
-			<br><br><br><br><br>
-	 	</div>
+	    	<div id="newsSources">
+	    	<h2 id="newsHeader">News Sources to Query</h2>
+		   	<div class="container" id="newsCheckList">
+			    <div class="row">
+			        <div class="form-group">
+			            <div class="searchable-container">
+			                <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
+			                    <div class="info-block block-info clearfix">
+			                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
+			                            <label class="btn btn-default" id="marketWatchBtn">
+			                                <div class="bizcontent">
+			                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" class="newsSource" id="marketWatch">
+			                                    <span class="glyphicon glyphicon-ok glyphicon-lg"></span>
+
+			                                    <img src="{{ url_for('static', filename='img/marketWatch.png') }}">
+			                                </div>
+			                            </label>
+			                        </div>
+			                    </div>
+			                </div>
+			                <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
+			                    <div class="info-block block-info clearfix">
+			                        <div class="square-box pull-left">
+			                        </div>
+			                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
+			                            <label class="btn btn-default" id="seekingAlphaBtn">
+			                                <div class="bizcontent">
+			                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" id="seekingAlpha">
+			                                    <span class="glyphicon glyphicon-ok glyphicon-lg" ></span>
+			                                    <img src="{{ url_for('static', filename='img/seekingAlpha.jpg') }}">
+			                                </div>
+			                            </label>
+			                        </div>
+			                    </div>
+			                </div>
+			                <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
+			                    <div class="info-block block-info clearfix">
+			  		                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
+			                            <label class="btn btn-default" id="bloombergBusinessBtn">
+			                                <div class="bizcontent">
+			                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" id="bloombergBusiness">
+			                                    <span class="glyphicon glyphicon-ok glyphicon-lg"></span>
+			                                    <img src="{{ url_for('static', filename='img/BloombergBusiness.jpg') }}">
+			                                </div>
+			                            </label>
+			                        </div>
+			                    </div>
+			                </div>
+			              <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
+			                    <div class="info-block block-info clearfix">
+			  		                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
+			                            <label class="btn btn-default" id="yahooFinanceBtn">
+			                                <div class="bizcontent">
+			                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" id="yahooFinance">
+			                                    <span class="glyphicon glyphicon-ok glyphicon-lg"></span>
+			                                    <img src="{{ url_for('static', filename='img/yahooFinance.jpg') }}">
+			                                </div>
+			                            </label>
+			                        </div>
+			                    </div>
+			                </div>
+			                 <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
+			                    <div class="info-block block-info clearfix">
+			                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
+			                            <label class="btn btn-default" id="motleyFoolBtn">
+			                                <div class="bizcontent">
+			                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" class="newsSource" id="motleyFool">
+			                                    <span class="glyphicon glyphicon-ok glyphicon-lg"></span>
+			                                    <img src="{{ url_for('static', filename='img/motleyFool.png') }}">
+			                                </div>
+			                            </label>
+			                        </div>
+			                    </div>
+			                </div>
+			                <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
+			                    <div class="info-block block-info clearfix">
+			                        <div class="square-box pull-left">
+			                        </div>
+			                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
+			                            <label class="btn btn-default" id="reutersBtn">
+			                                <div class="bizcontent">
+			                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" id="reuters">
+			                                    <span class="glyphicon glyphicon-ok glyphicon-lg" ></span>
+			                                    <img src="{{ url_for('static', filename='img/reuters.jpg') }}">
+			                                </div>
+			                            </label>
+			                        </div>
+			                    </div>
+			                </div>
+			                <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
+			                    <div class="info-block block-info clearfix">
+			  		                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
+			                            <label class="btn btn-default" id="WSJBtn">
+			                                <div class="bizcontent">
+			                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" id="WSJ">
+			                                    <span class="glyphicon glyphicon-ok glyphicon-lg"></span>
+			                                    <img src="{{ url_for('static', filename='img/WSJ.jpg') }}">
+			                                </div>
+			                            </label>
+			                        </div>
+			                    </div>
+			                </div>
+			              <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
+			                    <div class="info-block block-info clearfix">
+			  		                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
+			                            <label class="btn btn-default" id="financialTimesBtn">
+			                                <div class="bizcontent">
+			                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" id="financialTimes">
+			                                    <span class="glyphicon glyphicon-ok glyphicon-lg"></span>
+			                                    <img src="{{ url_for('static', filename='img/financialTimes.jpg') }}">
+			                                </div>
+			                            </label>
+				                        </div>
+				                    </div>
+				                </div>
+				                         <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
+			                    <div class="info-block block-info clearfix">
+			                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
+			                            <label class="btn btn-default" id="CNBCBtn">
+			                                <div class="bizcontent">
+			                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" class="newsSource" id="CNBC">
+			                                    <span class="glyphicon glyphicon-ok glyphicon-lg"></span>
+			                                    <img src="{{ url_for('static', filename='img/CNBC.gif') }}">
+			                                </div>
+			                            </label>
+			                        </div>
+			                    </div>
+			                </div>
+			                <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
+			                    <div class="info-block block-info clearfix">
+			                        <div class="square-box pull-left">
+			                        </div>
+			                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
+			                            <label class="btn btn-default" id="IBTimesBtn">
+			                                <div class="bizcontent">
+			                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" id="IBTimes">
+			                                    <span class="glyphicon glyphicon-ok glyphicon-lg" ></span>
+			                                    <img src="{{ url_for('static', filename='img/IBTimes.png') }}">
+			                                </div>
+			                            </label>
+			                        </div>
+			                    </div>
+			                </div>
+			                <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
+			                    <div class="info-block block-info clearfix">
+			  		                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
+			                            <label class="btn btn-default" id="googleFinanceBtn">
+			                                <div class="bizcontent">
+			                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" id="googleFinance">
+			                                    <span class="glyphicon glyphicon-ok glyphicon-lg"></span>
+			                                    <img src="{{ url_for('static', filename='img/googleFinance.png') }}">
+			                                </div>
+			                            </label>
+			                        </div>
+			                    </div>
+			                </div>
+			              <div class="items col-xs-5 col-sm-5 col-md-3 col-lg-3">
+			                    <div class="info-block block-info clearfix">
+			  		                        <div data-toggle="buttons" class="btn-group bizmoduleselect">
+			                            <label class="btn btn-default" id="businessInsiderBtn">
+			                                <div class="bizcontent">
+			                                    <input type="checkbox" name="var_id[]" autocomplete="off" value="" id="businessInsider">
+			                                    <span class="glyphicon glyphicon-ok glyphicon-lg"></span>
+			                                    <img src="{{ url_for('static', filename='img/businessInsider.png') }}">
+			                                </div>
+			                            </label>
+				                        </div>
+				                    </div>
+				                </div>
+				            </div>
+				        </div>
+					</div>
+				</div>
+				<br><br><br><br><br>
+		 	</div>
+		
+		</div>
 
 	 	<div id="particles" >
  			<h2 id="scraping">Scraping Web...</h2>
@@ -227,6 +226,15 @@
  			<h2 id="ticker">It appears there was an error with the ticker you enetered. Please try Again</h2>
  			<button type="button" class="btn btn-info btn-lg">Try New Query</button>
  		</div>
+
+ 	 <!-- <div> -->
+ 	  <div id="data" > </div>
+ 	  <div id="investing"> </div>
+ 	 <!-- </div> -->
+
+ 	  <div id="lineChartContainer">
+ 	  	<canvas id="lineChart" ></canvas>
+ 	  </div>
 
 	  <div id="resultTable" class="table-responsive-vertical shadow-z-1">
 	  <!-- Table starts here -->
@@ -244,32 +252,25 @@
 	    </table>
 	  </div>
 
-
-
-	 	
-
-		<section id="footer" class="section footer">
-		<div class="footer-bottom">
-			<div class="container">
-				<div class="row">
-					<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-						<div class="copyright">
-							© 2017, [One:1] Capital Management, All rights reserved
-						</div>
+	<section id="footer" class="section footer">
+	<div class="footer-bottom">
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+					<div class="copyright">
+						© 2017, [One:1] Capital Management, All rights reserved
 					</div>
-					<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+				</div>
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
 
-						<div class="design">
-							 <a target="_blank" href="https://github.com/dwallach1/stocker" class="fa fa-github "></a>
-						</div>
+					<div class="design">
+						 <a target="_blank" href="https://github.com/dwallach1/stocker" class="fa fa-github "></a>
 					</div>
 				</div>
 			</div>
 		</div>
-		</section>
-
-
-
+	</div>
+	</section>
 	
 	<script src="{{ url_for('static', filename='javascript/app.js') }}"></script>
 	</body>
