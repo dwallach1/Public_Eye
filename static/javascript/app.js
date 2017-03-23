@@ -55,28 +55,30 @@ $(function() {
 });
 
 
-function buildDisplayData(json, company){
-  
-   var polarity = 0;
-   var subjectivity = 0;
-   var inputs = 0;
-   var j = 1;
-   var data_div = document.getElementById('data');
-   var investing_div = document.getElementById('investing');
+function buildDisplayData(json_full, company){
 
-   investing_div.innerHTML += "<h1>Investing Advice</h1>";
-   investing_div.innerHTML += "<h1>We are bullish</h1>";
-
-   data_div.innerHTML += '<h1>Results for '+ json[0]['company'] +'</h1>';
-   data_div.innerHTML += '<h1>We Parsed ' + json.length + ' articles pertaining to your query </h1>';
-   
-   var table = document.getElementById('table');
-   var t = document.getElementById('resultTable');
-   var tBody = document.getElementById('tbody');
+  json = json_full[0]
   
-   var dataPoints = [];
+  var polarity = 0;
+  var subjectivity = 0;
+  var inputs = 0;
+  var j = 1;
+  var data_div = document.getElementById('data');
+  var investing_div = document.getElementById('investing');
+
+  investing_div.innerHTML += "<h1>Investing Advice</h1>";
+  investing_div.innerHTML += "<h1>We are bullish</h1>";
+
+  data_div.innerHTML += '<h1>Results for '+ json[0]['company'] +'</h1>';
+  data_div.innerHTML += '<h1>We Parsed ' + json.length + ' articles pertaining to your query </h1>';
    
-   for(i=0;i<json.length;i++) {
+  var table = document.getElementById('table');
+  var t = document.getElementById('resultTable');
+  var tBody = document.getElementById('tbody');
+  
+  var dataPoints = [];
+   
+  for(i=0;i<json.length;i++) {
     var row = table.insertRow(i+1);
     // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
     var cell1 = row.insertCell(0);
@@ -113,9 +115,10 @@ function buildDisplayData(json, company){
   dataPoints.sort(function(a,b){ return a[0] - b[0]; })
   buildSentimentGraph(dataPoints);
   buildRadarChart();
+  buildStockDataChart(json_full[1], company);
 
   $('html, body').animate({
-    scrollTop: $("#data").offset().top
+    scrollTop: $("#nav").offset().top
     }, 1000);
 
   hideHomePage();
@@ -237,12 +240,37 @@ function buildRadarChart(){
 
 }
 
+function buildStockDataChart(json, company) {
+
+  var stockData = {
+        labels : json['dates'],
+        datasets :
+         [
+            {
+              label: company.toUpperCase() + " Stock Price",
+              data : json['closep'],
+              backgroundColor: 'rgba(54, 162, 235, 0.2)',
+              borderColor: 'rgba(54, 162, 235, 1)',
+              borderWidth: 1
+            }]
+        }
+
+  var ctx = document.getElementById('stockPriceChart').getContext('2d');
+  var myNewChart = new Chart(ctx , {
+      type: "line",
+      data: stockData, 
+  });
+}
+
+
+
 function showData() {
    $("#data").css({"display": "inline-block"});
    $("#investing").css({"display": "inline-block"});
    $("#resultTable").css({"display": "block"});
    $("#lineChartContainer").css({"display": "inline-block"});
    $("#radarChartContainer").css({"display": "inline-block"});
+   $("#stockDataContainer").css({"display": "inline-block"});
    $("#resultButtons").css({"display": "block"});
    $('html, body').animate({
                scrollTop: $("#data").offset().top

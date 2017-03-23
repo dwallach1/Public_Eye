@@ -14,6 +14,7 @@ import nltk
 import pysentiment as ps
 from firebase import firebase
 import time
+import datetime
 from flask import Flask, jsonify, render_template, request, Response
 
 app = Flask(__name__)
@@ -55,8 +56,48 @@ class bcolors:
    	BOLD = '\033[1m'
    	UNDERLINE = '\033[4m'
 
-## make a class for a google result with the link, date, query, company, news_source 
-## a boolean if it is a sublink ect. mainly just the link and the date 
+
+
+
+def get_Stock_Data(ticker):
+	stock_price_url = "http://chartapi.finance.yahoo.com/instrument/1.0/"+ ticker +"/chartdata;type=quote;range=10y/csv"
+	req = urllib2.Request(stock_price_url, headers={'User-Agent': 'Mozilla/5.0'})
+	source_code = urllib2.urlopen(req).read()
+	dates = []
+	closep = []
+	highp = []
+	lowp = []
+	openp = []
+	volume = []
+	split_source = source_code.split('\n')
+
+	for line in split_source:
+		split_line = line.split(',')
+		if len(split_line) == 6:
+			if 'values' not in line and 'labels' not in line:
+				date_p = str(datetime.datetime.strptime(split_line[0], '%Y%m%d'))[:10]
+				year = date_p[0:4]
+				month = date_p[5:7]
+				day = date_p[8:10]
+				date_str = month + '/' + day + '/' + year 
+				dates.append(date_str)
+				closep.append(split_line[1])
+				highp.append(split_line[2])
+				lowp.append(split_line[3])
+				openp.append(split_line[4])
+				volume.append(split_line[5])
+
+	data = {
+		"dates": dates,
+		"closep": closep,
+		"highp": highp,
+		"lowp": lowp,
+		"openp": openp,
+		"volume": volume
+	}
+
+	return data
+
 
 def build_queries(companies, news_sources, extra_params):
 	"""
@@ -439,17 +480,20 @@ def run_from_web():
 	company_str = get_symbol(company_ticker)
 	company_str = re.sub(r', Inc\.', '', company_str)
 	company_str = re.sub(r'Corporation', '', company_str)
-	print "company_str is:" + company_str
+
 	if company_str is None:
 		return {"error", "bad_ticker"}
 
 	company = [company_str]	
 	queries = build_queries(company, news_sources, extra_params)
-	print "queriees have been built"
 	web_scraper(queries, max_depth)
+
 	print sum(total_sentiment)/len(total_entries)
-	data = return_JSON_List()
-	# print data
+
+	stock_data = get_Stock_Data(company_ticker)
+	article_data = return_JSON_List()
+	data = [article_data, stock_data]
+
 	response = app.response_class(
         response=json.dumps(data),
         status=200,
